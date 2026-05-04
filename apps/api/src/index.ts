@@ -1,11 +1,12 @@
 import "dotenv/config"
-import { serve } from "@hono/node-server"
 import { Hono } from "hono"
+import { serve } from "@hono/node-server"
+import { auth } from "./utils/auth.js"
 
-const app = new Hono()
+const app = new Hono().basePath("/api")
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!")
+app.on(["POST", "GET"], "/auth/*", (c) => {
+  return auth.handler(c.req.raw)
 })
 
 serve(
