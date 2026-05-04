@@ -22,12 +22,15 @@ export const ErrorResponseSchema = z
   .openapi("ErrorResponse")
 
 export const commonErrors = {
-  400: jsonResponse(ErrorResponseSchema, "Bad request"),
-  401: jsonResponse(ErrorResponseSchema, "Unauthorized"),
-  403: jsonResponse(ErrorResponseSchema, "Forbidden"),
-  404: jsonResponse(ErrorResponseSchema, "Not found"),
-  409: jsonResponse(ErrorResponseSchema, "Conflict"),
-  422: jsonResponse(ErrorResponseSchema, "Validation error"),
-  429: jsonResponse(ErrorResponseSchema, "Too many requests"),
-  500: jsonResponse(ErrorResponseSchema, "Internal server error"),
+  400: jsonResponse(ErrorResponseSchema, "Bad request. Missing or invalid parameters."),
+  401: jsonResponse(ErrorResponseSchema, "Unauthorized. Missing or invalid authentication."),
+  403: jsonResponse(ErrorResponseSchema, "Forbidden. Insufficient permissions."),
+  404: jsonResponse(ErrorResponseSchema, "Not found. Resource does not exist."),
+  409: jsonResponse(ErrorResponseSchema, "Conflict. Resource already exists."),
+  422: jsonResponse(ErrorResponseSchema, "Unprocessable. Request body failed validation."),
+  429: jsonResponse(ErrorResponseSchema, "Rate limited. Too many requests, try again later."),
+  500: jsonResponse(ErrorResponseSchema, "Internal server error. Something went wrong."),
+  502: jsonResponse(ErrorResponseSchema, "Bad gateway. Upstream returned an invalid response."),
+  503: jsonResponse(ErrorResponseSchema, "Service unavailable. Server is temporarily down."),
+  504: jsonResponse(ErrorResponseSchema, "Gateway timeout. Upstream did not respond in time."),
 } as const
