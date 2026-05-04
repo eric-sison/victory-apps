@@ -45,7 +45,7 @@ app.doc("/docs/spec", {
 })
 
 app.get(
-  "/docs",
+  "/v1/docs",
   Scalar({
     url: "/api/docs/spec",
     pageTitle: "Victory API",
