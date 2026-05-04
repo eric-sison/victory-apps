@@ -29,6 +29,9 @@ importers:
       '@hono/structured-logger':
         specifier: ^0.1.0
         version: 0.1.0(hono@4.12.16)
+      '@hono/zod-validator':
+        specifier: ^0.7.6
+        version: 0.7.6(hono@4.12.16)(zod@3.25.76)
       better-auth:
         specifier: ^1.6.9
         version: 1.6.9(@tanstack/react-start@1.163.2(crossws@0.4.5(srvx@0.11.15))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vite@7.3.2(@types/node@20.19.39)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)))(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(@types/pg@8.20.0)(kysely@0.28.17)(pg@8.20.0))(pg@8.20.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -41,6 +44,9 @@ importers:
       hono:
         specifier: ^4.12.16
         version: 4.12.16
+      hono-rate-limiter:
+        specifier: ^0.5.3
+        version: 0.5.3(hono@4.12.16)
       pg:
         specifier: ^8.20.0
         version: 8.20.0
@@ -1003,6 +1009,12 @@ packages:
     engines: {node: '>=16.0.0'}
     peerDependencies:
       hono: '>=4.0.0'
+
+  '@hono/zod-validator@0.7.6':
+    resolution: {integrity: sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==}
+    peerDependencies:
+      hono: '>=3.9.0'
+      zod: ^3.25.0 || ^4.0.0
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -3080,6 +3092,15 @@ packages:
 
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
+
+  hono-rate-limiter@0.5.3:
+    resolution: {integrity: sha512-M0DxbVMpPELEzLi0AJg1XyBHLGJXz7GySjsPoK+gc5YeeBsdGDGe+2RvVuCAv8ydINiwlbxqYMNxUEyYfRji/A==}
+    peerDependencies:
+      hono: ^4.10.8
+      unstorage: ^1.17.3
+    peerDependenciesMeta:
+      unstorage:
+        optional: true
 
   hono@4.12.16:
     resolution: {integrity: sha512-jN0ZewiNAWSe5khM3EyCmBb250+b40wWbwNILNfEvq84VREWwOIkuUsFONk/3i3nqkz7Oe1PcpM2mwQEK2L9Kg==}
@@ -5324,6 +5345,11 @@ snapshots:
     dependencies:
       hono: 4.12.16
 
+  '@hono/zod-validator@0.7.6(hono@4.12.16)(zod@3.25.76)':
+    dependencies:
+      hono: 4.12.16
+      zod: 3.25.76
+
   '@humanfs/core@0.19.1': {}
 
   '@humanfs/node@0.16.7':
@@ -7436,6 +7462,10 @@ snapshots:
       set-cookie-parser: 3.1.0
 
   help-me@5.0.0: {}
+
+  hono-rate-limiter@0.5.3(hono@4.12.16):
+    dependencies:
+      hono: 4.12.16
 
   hono@4.12.16: {}
 

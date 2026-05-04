@@ -4,35 +4,19 @@ import { Hono } from "hono"
 import { serve } from "@hono/node-server"
 import { auth } from "./utils/auth.js"
 import { env } from "./utils/env.js"
-import { healthcheckHandler } from "./routes/healthcheck.js"
+import { cors } from "./middleware/cors.js"
+import { logger } from "./middleware/logger.js"
 import { requestId } from "hono/request-id"
-import { structuredLogger } from "@hono/structured-logger"
-import pino from "pino"
-
-const rootLogger = pino({
-  ...(env.NODE_ENV === "development" && {
-    transport: {
-      target: "pino-pretty",
-      options: {
-        colorize: true,
-        levelFirst: true,
-        translateTime: "SYS:HH:MM:ss",
-        ignore: "pid,hostname",
-        messageFormat: "{msg} {requestId}",
-      },
-    },
-  }),
-})
+import { secureHeaders } from "hono/secure-headers"
+import { healthcheckHandler } from "./routes/healthcheck.js"
 
 const app = new Hono<AppEnv>().basePath("/api")
 
 // Middleware
+app.use(secureHeaders())
+app.use(cors())
 app.use(requestId())
-app.use(
-  structuredLogger({
-    createLogger: (c) => rootLogger.child({ requestId: c.var.requestId }),
-  })
-)
+app.use(logger())
 
 app.on(["POST", "GET"], "/auth/*", (c) => {
   return auth.handler(c.req.raw)

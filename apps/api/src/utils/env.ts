@@ -7,6 +7,10 @@ const envSchema = z.object({
   BETTER_AUTH_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string(),
   DATABASE_URL: z.string().url("DATABASE_URL must be a valid connection string"),
+  ALLOWED_ORIGINS: z
+    .string()
+    .transform((s) => s.split(",").map((o) => o.trim()))
+    .pipe(z.array(z.string().url())),
 
   // pgAdmin (optional — only needed in local/dev)
   PGADMIN_DEFAULT_EMAIL: z.string().email().optional(),
