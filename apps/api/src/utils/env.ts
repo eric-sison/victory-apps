@@ -6,7 +6,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().min(1).max(65535).default(3001),
   BETTER_AUTH_URL: z.url(),
   BETTER_AUTH_SECRET: z.string(),
-  DATABASE_URL: z.string().url("DATABASE_URL must be a valid connection string"),
+  DATABASE_URL: z.url("DATABASE_URL must be a valid connection string"),
   ALLOWED_ORIGINS: z
     .string()
     .transform((s) => s.split(",").map((o) => o.trim()))
