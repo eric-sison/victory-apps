@@ -8,7 +8,6 @@ import { logger } from "./middleware/logger.js"
 import { requestId } from "hono/request-id"
 import { secureHeaders } from "hono/secure-headers"
 import { healthcheckHandler } from "./routes/healthcheck.js"
-import { authHandler } from "./routes/v1/auth.js"
 import { errorHandler } from "./middleware/error-handler.js"
 
 export const app = new OpenAPIHono<AppEnv>().basePath("/api")
@@ -21,7 +20,7 @@ app.onError(errorHandler)
 
 app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
 
-const routes = [healthcheckHandler, authHandler] as const
+const routes = [healthcheckHandler] as const
 routes.forEach((route) => app.route("/", route))
 
 app.doc("/docs/spec", {
