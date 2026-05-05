@@ -1,7 +1,7 @@
 "use client"
 
 import { authClient } from "@workspace/auth/client"
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/Button"
 import { FunctionComponent } from "react"
 
 export const AddAdminUser: FunctionComponent = () => {
@@ -15,5 +15,5 @@ export const AddAdminUser: FunctionComponent = () => {
 
     console.log(result)
   }
-  return <Button onClick={handleAddAdminUser}>Add admin user</Button>
+  return <Button onClick={handleAddAdminUser}>Create user</Button>
 }
