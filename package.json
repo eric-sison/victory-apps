@@ -23,7 +23,8 @@
     "overrides": {
       "glob": "^10",
       "rimraf": "^5",
-      "inflight": "npm:lru-cache@^10"
+      "inflight": "npm:lru-cache@^10",
+      "esbuild": "0.27.7"
     }
   }
 }
