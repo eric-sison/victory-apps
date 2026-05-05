@@ -1,0 +1,58 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+**/dist
+.next
+**/.next
+.turbo
+**/.turbo
+
+# Environment files
+.env
+**/.env
+.env.local
+**/.env.local
+.env.development
+.env.production
+
+# Logs
+*.log
+**/logs
+npm-debug.log*
+pnpm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+**/Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Test
+coverage
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+
+# Misc
+README.md
+*.md
+.prettierrc
+.eslintrc*
+eslint.config*
