@@ -1,10 +1,10 @@
 import type { Context } from "hono"
 import type { AppEnv } from "../types/app-env.js"
+import type { ContentfulStatusCode } from "hono/utils/http-status"
 import { HTTPException } from "hono/http-exception"
 import { env } from "../utils/env.js"
-import { ZodError } from "zod"
+import { ZodError, z } from "zod"
 import { APIError } from "better-auth/api"
-import type { ContentfulStatusCode } from "hono/utils/http-status"
 
 export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   const logger = c.var.logger
@@ -16,12 +16,13 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
 
   // Zod validation errors (from zValidator)
   if (err instanceof ZodError) {
-    logger.warn({ ...meta, msg: "Validation error", issues: err.flatten().fieldErrors })
+    logger.warn({ ...meta, msg: "Validation error", issues: z.treeifyError(err) })
+
     return c.json(
       {
         status: 422,
         message: "Validation error",
-        details: err.flatten().fieldErrors,
+        details: z.treeifyError(err),
       },
       422
     )

@@ -9,6 +9,8 @@ import { requestId } from "hono/request-id"
 import { secureHeaders } from "hono/secure-headers"
 import { healthcheckHandler } from "./routes/healthcheck.js"
 import { errorHandler } from "./middleware/error-handler.js"
+import { authSession } from "./middleware/auth-session.js"
+import { rateLimiter } from "./middleware/rate-limiter.js"
 
 export const app = new OpenAPIHono<AppEnv>().basePath("/api")
 
@@ -16,7 +18,12 @@ app.use(secureHeaders())
 app.use(cors())
 app.use(requestId())
 app.use(logger())
-app.onError(errorHandler)
+app.use(authSession)
+
+// Rate limit specific auth routes before the catch-all
+app.use("/auth/sign-in", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
+app.use("/auth/sign-up", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
+app.use("/auth/forget-password", rateLimiter({ windowMs: 60 * 1000, limit: 3 }))
 
 app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
 
@@ -29,3 +36,6 @@ app.doc("/docs/spec", {
 })
 
 app.get("/docs", Scalar({ url: "/api/docs/spec", pageTitle: "Victory API" }))
+
+// Handle errors thrown globally
+app.onError(errorHandler)

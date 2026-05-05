@@ -4,7 +4,11 @@ import { env } from "../utils/env.js"
 export const cors = () =>
   honoCors({
     origin: (origin) => {
-      if (!origin) return null // block non-browser / server-side requests with no origin
+      if (!origin) {
+        // block non-browser / server-side requests with no origin
+        return null
+      }
+
       return env.ALLOWED_ORIGINS.includes(origin) ? origin : null
     },
     allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
