@@ -13,6 +13,7 @@ const healthCheckRoute = createRoute({
     200: jsonResponse(HealthCheckResponseSchema, "Service is healthy and running.", {
       status: 200,
       message: "Service is healthy and running.",
+      code: "OK",
     }),
     429: commonErrors[429],
     500: commonErrors[500],
@@ -23,5 +24,6 @@ export const healthcheckHandler = new OpenAPIHono<AppEnv>().openapi(healthCheckR
   return c.json({
     status: 200,
     message: "Service is healthy and running.",
+    code: "OK",
   })
 })

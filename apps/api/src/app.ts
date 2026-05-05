@@ -47,7 +47,7 @@ app.get(
     pageTitle: "Victory API",
     servers: [
       {
-        url: "http://localhost:3001/api",
+        url: "http://localhost:3001",
         description: "Local development server",
       },
     ],
