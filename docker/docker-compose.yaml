@@ -1,4 +1,21 @@
+# =============================================================================
+# victory-apps — docker/docker-compose.yaml
+# Runs all four services: postgres, pgadmin, api (Hono), web (Next.js)
+#
+# Run from the repo root:
+#   cp .env.example .env
+#   docker compose -f docker/docker-compose.yaml build
+#   docker compose -f docker/docker-compose.yaml up -d
+#
+# Or cd into docker/ first:
+#   docker compose build
+#   docker compose up -d
+# =============================================================================
+
 services:
+  # ---------------------------------------------------------------------------
+  # Database
+  # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
     container_name: postgres
@@ -29,6 +46,9 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ---------------------------------------------------------------------------
+  # pgAdmin (optional — can be omitted in production)
+  # ---------------------------------------------------------------------------
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: pgadmin
@@ -45,7 +65,7 @@ services:
       PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40 # ERROR only
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ./pg-admin.json:/pgadmin4/servers.json:ro
+      - ../pg-admin.json:/pgadmin4/servers.json:ro # pg-admin.json lives at repo root
     networks:
       - internal
     ports:
@@ -58,18 +78,22 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ---------------------------------------------------------------------------
+  # Migrator — runs once: db:migrate + seed:admin, then exits
+  # api and web will not start until this completes successfully.
+  # ---------------------------------------------------------------------------
   migrator:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .. # repo root — where package.json, apps/, packages/ live
+      dockerfile: docker/Dockerfile
       target: migrator
     container_name: victory-migrator
-    restart: on-failure # retry if migration fails (e.g. DB not ready yet); exits 0 on success
+    restart: on-failure
     depends_on:
       postgres:
         condition: service_healthy
     env_file:
-      - .env
+      - .env # .env lives in docker/ alongside this compose file
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -85,19 +109,21 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ---------------------------------------------------------------------------
+  # Hono API
+  # ---------------------------------------------------------------------------
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       target: api
-      # NEXT_PUBLIC_ vars are not needed here; they're web-only
     container_name: victory-api
     restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
       migrator:
-        condition: service_completed_successfully # wait for migrations + seed to finish
+        condition: service_completed_successfully
     env_file:
       - .env
     environment:
@@ -127,13 +153,15 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ---------------------------------------------------------------------------
+  # Next.js Web
+  # ---------------------------------------------------------------------------
   web:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: docker/Dockerfile
       target: web
       args:
-        # Baked into the client bundle — must point to the public API URL
         NEXT_PUBLIC_BETTER_AUTH_URL: ${NEXT_PUBLIC_BETTER_AUTH_URL}
     container_name: victory-web
     restart: unless-stopped
@@ -164,6 +192,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
+# =============================================================================
 volumes:
   postgres_data:
     driver: local

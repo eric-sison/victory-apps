@@ -25,6 +25,17 @@
       "rimraf": "^5",
       "inflight": "npm:lru-cache@^10",
       "esbuild": "0.27.7"
+    },
+    "supportedArchitectures": {
+      "os": [
+        "current",
+        "linux"
+      ],
+      "cpu": [
+        "current",
+        "arm64",
+        "x64"
+      ]
     }
   }
 }

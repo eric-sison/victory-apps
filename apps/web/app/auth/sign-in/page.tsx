@@ -32,6 +32,7 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-svh items-center justify-center">
+      <h3>Login</h3>
       <div className="w-full max-w-sm rounded-xl border border-border p-8">
         <div className="mb-8">
           <h1 className="text-2xl font-medium">Welcome back</h1>
