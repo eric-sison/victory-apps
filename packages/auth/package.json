@@ -10,10 +10,12 @@
   },
   "scripts": {
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "seed:admin": "tsx src/seed-admin.ts"
   },
   "dependencies": {
     "better-auth": "^1.6.9",
+    "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "pg": "^8.20.0"
   },
