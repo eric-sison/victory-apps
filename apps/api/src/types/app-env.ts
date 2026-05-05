@@ -1,5 +1,5 @@
+import type { auth } from "@workspace/auth/server"
 import type pino from "pino"
-import type { auth } from "../utils/auth.js"
 
 export type AppEnv = {
   Variables: {

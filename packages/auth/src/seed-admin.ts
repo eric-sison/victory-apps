@@ -1,10 +1,10 @@
 import "dotenv/config"
 import { DatabaseError } from "pg"
-import db from "./db-conn.js"
 import { users, accounts } from "./auth-schema.js"
 import { eq } from "drizzle-orm"
 import { generateId } from "better-auth"
 import { hashPassword } from "better-auth/crypto"
+import db from "./db-conn.js"
 
 const ADMIN_EMAIL = process.env.DEFAULT_ADMIN_EMAIL
 const ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD

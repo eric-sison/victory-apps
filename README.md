@@ -95,10 +95,6 @@ DATABASE_URL=postgresql://appuser:your_password@localhost:5432/appdb
 BETTER_AUTH_SECRET=your_secret_here_min_32_characters
 BETTER_AUTH_URL=http://localhost:3001
 
-# Consumer app url
-CLIENT_URL_DEV=http://localhost:3000
-CLIENT_URL_PROD=https://app.deploy.com
-
 # Default admin user — created when running the seed script
 DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=your_secure_admin_password

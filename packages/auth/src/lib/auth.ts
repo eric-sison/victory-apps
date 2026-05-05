@@ -1,8 +1,8 @@
-import * as authSchema from "../auth-schema.js"
 import { admin, openAPI } from "better-auth/plugins"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import db from "../db-conn.js"
+import * as authSchema from "../auth-schema.js"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -13,6 +13,6 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [process.env.CLIENT_URL_DEV!, process.env.CLIENT_URL_PROD!],
+  trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],
   plugins: [openAPI(), admin()],
 })
