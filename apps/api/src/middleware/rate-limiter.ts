@@ -1,5 +1,6 @@
 import { rateLimiter as honoRateLimiter } from "hono-rate-limiter"
 import type { AppEnv } from "../types/app-env.js"
+import { ErrorMessages } from "../utils/openapi.js"
 
 type RateLimiterOptions = {
   windowMs?: number
@@ -26,7 +27,7 @@ export const rateLimiter = ({
       return c.json(
         {
           status: 429,
-          message: "Too many requests",
+          message: ErrorMessages[429],
         },
         429
       )

@@ -32,10 +32,26 @@ routes.forEach((route) => app.route("/", route))
 
 app.doc("/docs/spec", {
   openapi: "3.0.0",
-  info: { title: "Victory API", version: "1.0.0" },
+  info: {
+    title: "Victory API",
+    description: "This API provides access to application resources and operations.",
+    version: "1.0.0",
+  },
 })
 
-app.get("/docs", Scalar({ url: "/api/docs/spec", pageTitle: "Victory API" }))
+app.get(
+  "/docs",
+  Scalar({
+    url: "/api/docs/spec",
+    pageTitle: "Victory API",
+    servers: [
+      {
+        url: "http://localhost:3001/api",
+        description: "Local development server",
+      },
+    ],
+  })
+)
 
 // Handle errors thrown globally
 app.onError(errorHandler)

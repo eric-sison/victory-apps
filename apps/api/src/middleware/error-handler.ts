@@ -5,6 +5,7 @@ import { HTTPException } from "hono/http-exception"
 import { env } from "../utils/env.js"
 import { ZodError, z } from "zod"
 import { APIError } from "better-auth/api"
+import { ErrorMessages } from "../utils/openapi.js"
 
 export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   const logger = c.var.logger
@@ -16,12 +17,12 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
 
   // Zod validation errors (from zValidator)
   if (err instanceof ZodError) {
-    logger.warn({ ...meta, msg: "Validation error", issues: z.treeifyError(err) })
+    logger.warn({ ...meta, msg: ErrorMessages[422], issues: z.treeifyError(err) })
 
     return c.json(
       {
         status: 422,
-        message: "Validation error",
+        message: ErrorMessages[422],
         details: z.treeifyError(err),
       },
       422
@@ -30,11 +31,13 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
 
   // Better Auth errors
   if (err instanceof APIError) {
-    logger.warn({ ...meta, msg: err.message, status: err.statusCode })
+    const message = ErrorMessages[err.statusCode as keyof typeof ErrorMessages] ?? err.message
+    logger.warn({ ...meta, msg: message, status: err.statusCode })
+
     return c.json(
       {
         status: err.statusCode,
-        message: err.message,
+        message,
         code: err.body?.code,
       },
       err.statusCode as ContentfulStatusCode | undefined
@@ -43,11 +46,13 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
 
   // Intentional HTTP errors (thrown via new HTTPException)
   if (err instanceof HTTPException) {
-    logger.warn({ ...meta, msg: err.message, status: err.status })
+    const message = ErrorMessages[err.status as keyof typeof ErrorMessages] ?? err.message
+    logger.warn({ ...meta, msg: message, status: err.status })
+
     return c.json(
       {
         status: err.status,
-        message: err.message,
+        message,
       },
       err.status
     )
@@ -64,7 +69,7 @@ export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   return c.json(
     {
       status: 500,
-      message: env.NODE_ENV === "production" ? "Internal server error" : err.message,
+      message: env.NODE_ENV === "production" ? ErrorMessages[500] : err.message,
       ...(env.NODE_ENV !== "production" && { stack: err.stack }),
     },
     500

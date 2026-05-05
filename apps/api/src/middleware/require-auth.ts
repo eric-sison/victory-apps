@@ -1,6 +1,7 @@
 import type { AppEnv } from "../types/app-env.js"
 import { createMiddleware } from "hono/factory"
 import { HTTPException } from "hono/http-exception"
+import { ErrorMessages } from "../utils/openapi.js"
 
 export const requireAuth = createMiddleware<AppEnv>(async (c, next) => {
   const user = c.var.user
@@ -17,11 +18,11 @@ export const requireAuth = createMiddleware<AppEnv>(async (c, next) => {
       userId: user.id,
     })
 
-    throw new HTTPException(401, { message: "Session expired" })
+    throw new HTTPException(401, { message: ErrorMessages[401] })
   }
 
   if (!user.emailVerified) {
-    throw new HTTPException(403, { message: "Email not verified" })
+    throw new HTTPException(403, { message: ErrorMessages[403] })
   }
 
   c.var.logger.info({
