@@ -1,6 +1,6 @@
-import { createMiddleware } from "hono/factory"
 import type { AppEnv } from "../types/app-env.js"
-import { auth } from "../utils/auth.js"
+import { createMiddleware } from "hono/factory"
+import { auth } from "@workspace/auth/server"
 
 export const authSession = createMiddleware<AppEnv>(async (c, next) => {
   try {

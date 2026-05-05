@@ -2,6 +2,7 @@ import type { AppEnv } from "../types/app-env.js"
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi"
 import { commonErrors, jsonResponse } from "../utils/openapi.js"
 import { HealthCheckResponseSchema } from "../contracts/healthcheck.js"
+import { requireAuth } from "../middleware/require-auth.js"
 
 const healthCheckRoute = createRoute({
   method: "get",

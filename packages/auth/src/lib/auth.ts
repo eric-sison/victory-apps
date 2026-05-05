@@ -1,8 +1,8 @@
-import { openAPI } from "better-auth/plugins"
+import * as authSchema from "../auth-schema.js"
+import { admin, openAPI } from "better-auth/plugins"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import db from "../db/conn.js"
-import * as authSchema from "../db/schemas/auth-schema.js"
+import db from "../db-conn.js"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -15,5 +15,5 @@ export const auth = betterAuth({
     enabled: true,
   },
 
-  plugins: [openAPI()],
+  plugins: [openAPI(), admin()],
 })
