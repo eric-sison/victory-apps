@@ -45,7 +45,7 @@ services:
       PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40 # ERROR only
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ./pgadmin/servers.json:/pgadmin4/servers.json:ro # pre-register postgres server
+      - ./pg-admin.json:/pgadmin4/servers.json:ro # pre-register postgres server
     networks:
       - db_network
     ports:
