@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "type": "module",
   "private": true,
+  "files": [
+    "dist"
+  ],
   "exports": {
     "./server": "./src/lib/auth.ts",
     "./client": "./src/lib/auth-client.ts",
     "./schema": "./src/auth-schema.ts"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "seed:admin": "tsx src/seed-admin.ts"
@@ -23,6 +27,7 @@
     "@types/pg": "^8.20.0",
     "@workspace/typescript-config": "workspace:*",
     "drizzle-kit": "^0.31.10",
+    "tsx": "^4.7.1",
     "typescript": "^5.9.3"
   }
 }
