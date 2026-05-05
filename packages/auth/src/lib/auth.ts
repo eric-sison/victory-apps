@@ -10,10 +10,9 @@ export const auth = betterAuth({
     usePlural: true,
     schema: authSchema,
   }),
-
   emailAndPassword: {
     enabled: true,
   },
-
+  trustedOrigins: [process.env.CLIENT_URL_DEV!, process.env.CLIENT_URL_PROD!],
   plugins: [openAPI(), admin()],
 })
