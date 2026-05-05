@@ -11,6 +11,7 @@ import { healthcheckHandler } from "./routes/healthcheck.js"
 import { errorHandler } from "./middleware/error-handler.js"
 import { authSession } from "./middleware/auth-session.js"
 import { rateLimiter } from "./middleware/rate-limiter.js"
+import { ErrorMessages } from "./utils/openapi.js"
 
 export const app = new OpenAPIHono<AppEnv>().basePath("/api")
 
@@ -55,3 +56,4 @@ app.get(
 
 // Handle errors thrown globally
 app.onError(errorHandler)
+app.notFound((c) => c.json({ status: 404, message: ErrorMessages[404] }, 404))
