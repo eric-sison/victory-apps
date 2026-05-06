@@ -89,23 +89,17 @@ Generate a secret with:
 openssl rand -base64 32
 ```
 
-### 6. Run Database Migrations
+### 6. Run Auth Migrations and Seed the Admin User
 
 ```bash
-pnpm --filter auth db:migrate
+pnpm db:auth:migrate
 ```
 
-This creates all required tables: `users`, `sessions`, `accounts`, and `verifications`.
+This runs migrations and seeds the default admin user in one step. It will also start PostgreSQL automatically if it isn't already running.
 
-### 7. Seed the Admin User
+Migrations create all required tables: `users`, `sessions`, `accounts`, and `verifications`. The admin seed is idempotent — running it again replaces the existing admin with the values currently in `packages/auth/.env`.
 
-```bash
-pnpm --filter auth seed:admin
-```
-
-This is idempotent — running it again replaces the existing admin with the values currently in `packages/auth/.env`.
-
-### 8. Configure Environment Variables for `apps/api`
+### 7. Configure Environment Variables for `apps/api`
 
 ```bash
 cp apps/api/.env.example apps/api/.env
@@ -127,7 +121,7 @@ BETTER_AUTH_URL=http://localhost:3001/api/auth
 ALLOWED_ORIGINS=http://localhost:3000
 ```
 
-### 9. Configure Environment Variables for `apps/web`
+### 8. Configure Environment Variables for `apps/web`
 
 ```bash
 cp apps/web/.env.example apps/web/.env
@@ -140,7 +134,7 @@ NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3001/api/auth
 
 > `NEXT_PUBLIC_` variables are baked into the client bundle at build time. Restart the dev server after changing this value.
 
-### 10. Run the Apps
+### 9. Run the Apps
 
 Run both services from the root:
 
@@ -216,7 +210,7 @@ DEFAULT_ADMIN_NAME=Super Admin
 ### 2. Run the Deploy Script
 
 ```bash
-pnpm deploy
+pnpm deploy:up
 ```
 
 The deploy script handles everything in order: building images, starting infrastructure, running migrations, seeding the admin user, and starting the API and web services.
@@ -225,17 +219,18 @@ The deploy script handles everything in order: building images, starting infrast
 
 ## Deploy Scripts
 
-| Script                     | Command                               | Description                                                                                                                                        |
-| -------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm deploy`              | `./deploy.sh`                         | Build images using the layer cache, then start all services. Use this for routine deploys.                                                         |
-| `pnpm deploy:clean`        | `./deploy.sh --no-cache`              | Rebuild all images from scratch (no cache), then start all services. Use this when a dependency update or Dockerfile change isn't being picked up. |
-| `pnpm deploy:build`        | `./deploy.sh --build-only`            | Build images only. Does not start any containers. Useful for validating a build before deploying.                                                  |
-| `pnpm deploy:build:clean`  | `./deploy.sh --build-only --no-cache` | Same as above but with no cache.                                                                                                                   |
-| `pnpm deploy:start`        | `./deploy.sh --skip-build`            | Skip the build step and start containers using existing images. Use this when images are already built and you just need to restart services.      |
-| `pnpm deploy:down`         | `./cleanup.sh`                        | Stop and remove all containers and networks. Volumes and images are kept — data is preserved.                                                      |
-| `pnpm deploy:down:volumes` | `./cleanup.sh --volumes`              | Stop containers and delete named volumes. **This wipes the database.** Use when you need a clean slate.                                            |
-| `pnpm deploy:down:images`  | `./cleanup.sh --images`               | Stop containers and remove built images. The next deploy will rebuild from scratch.                                                                |
-| `pnpm deploy:down:all`     | `./cleanup.sh --all`                  | Remove everything — containers, volumes, and images. Equivalent to a full reset.                                                                   |
+| Script                     | Command                                       | Description                                                                                                                                        |
+| -------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm deploy:up`           | `./scripts/deploy.sh`                         | Build images using the layer cache, then start all services. Use this for routine deploys.                                                         |
+| `pnpm deploy:clean`        | `./scripts/deploy.sh --no-cache`              | Rebuild all images from scratch (no cache), then start all services. Use this when a dependency update or Dockerfile change isn't being picked up. |
+| `pnpm deploy:build`        | `./scripts/deploy.sh --build-only`            | Build images only. Does not start any containers. Useful for validating a build before deploying.                                                  |
+| `pnpm deploy:build:clean`  | `./scripts/deploy.sh --build-only --no-cache` | Same as above but with no cache.                                                                                                                   |
+| `pnpm deploy:start`        | `./scripts/deploy.sh --skip-build`            | Skip the build step and start containers using existing images. Use this when images are already built and you just need to restart services.      |
+| `pnpm deploy:down`         | `./scripts/cleanup.sh`                        | Stop and remove all containers and networks. Volumes and images are kept — data is preserved.                                                      |
+| `pnpm deploy:down:volumes` | `./scripts/cleanup.sh --volumes`              | Stop containers and delete named volumes. **This wipes the database.** Use when you need a clean slate.                                            |
+| `pnpm deploy:down:images`  | `./scripts/cleanup.sh --images`               | Stop containers and remove built images. The next deploy will rebuild from scratch.                                                                |
+| `pnpm deploy:down:all`     | `./scripts/cleanup.sh --all`                  | Remove everything — containers, volumes, and images. Equivalent to a full reset.                                                                   |
+| `pnpm db:auth:migrate`     | `./scripts/auth-migrate.sh`                   | Start the database if needed, run migrations, and seed the admin user. Use this during local development setup.                                    |
 
 ---
 
