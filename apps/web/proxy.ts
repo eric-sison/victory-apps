@@ -16,29 +16,42 @@ export async function proxy(request: NextRequest) {
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname)
   const isPublicPrefix = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 
-  // Skip session check entirely for API/_next routes
   if (isPublicPrefix) {
     return NextResponse.next()
   }
 
-  const res = await fetch(`${API_BASE_URL}/api/auth/get-session`, {
-    headers: request.headers,
-  })
+  // Strip the Host header so the internal API receives its own hostname,
+  // not the browser-facing one. Better Auth uses this to validate origins
+  // and set cookie attributes — a mismatch causes silent auth failures in
+  // production Docker where the internal hostname differs from the public one.
+  const forwardHeaders = new Headers(request.headers)
+  forwardHeaders.delete("host")
 
-  const session = (await res.json()) as AuthSession
+  let session: AuthSession = { user: null, session: null }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/get-session`, {
+      headers: forwardHeaders,
+    })
+
+    if (res.ok) {
+      session = (await res.json()) as AuthSession
+    }
+  } catch {
+    // If the API is unreachable, fail open — let Next.js render the page.
+    // Protected pages will still be gated client-side by AuthProvider.
+    return NextResponse.next()
+  }
 
   const isAuthenticated = !!(session?.user && session?.session)
 
-  // Redirect authenticated users away from auth routes
   if (isAuthenticated && isPublicRoute) {
-    return NextResponse.redirect(new URL("/", request.url))
+    return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
-  // Redirect unauthenticated users away from protected routes
   if (!isAuthenticated && !isPublicRoute) {
     const redirectUrl = new URL("/auth/sign-in", request.url)
     redirectUrl.searchParams.set("callbackUrl", pathname)
-
     return NextResponse.redirect(redirectUrl)
   }
 

@@ -44,7 +44,7 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
     mutationFn: async () => {
       await authClient.signIn.email({
         ...form.getValues(),
-        callbackURL: callbackURL ?? "/",
+        callbackURL: callbackURL ?? "/dashboard",
         fetchOptions: {
           onError(ctx) {
             let errorMessage = ""
