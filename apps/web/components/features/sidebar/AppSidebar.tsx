@@ -32,8 +32,11 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/DropdownMenu"
 import { Url } from "next/dist/shared/lib/router/router"
+import { useAuth } from "@/components/AuthProvider"
 
 export const AppSidebar: FunctionComponent = () => {
+  const { user } = useAuth()
+
   const { open } = useSidebar()
   const [mounted, setMounted] = useState(false)
 
@@ -76,7 +79,7 @@ export const AppSidebar: FunctionComponent = () => {
       </SidebarHeader> */}
 
       <SidebarContent>
-        {sidebarItems.map((sidebarItem, index) => (
+        {sidebarItems(user?.id).map((sidebarItem, index) => (
           <SidebarGroup key={index}>
             {sidebarItem.group && (
               <SidebarGroupLabel className="text-[10px] font-bold tracking-wider uppercase">

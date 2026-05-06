@@ -26,6 +26,7 @@
     "build": "tsc -p tsconfig.build.json",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
     "seed:admin": "tsx src/seed-admin.ts"
   },
   "dependencies": {

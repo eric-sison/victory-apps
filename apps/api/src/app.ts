@@ -22,9 +22,9 @@ app.use(logger())
 app.use(authSession)
 
 // Rate limit specific auth routes before the catch-all
-// app.use("/auth/sign-in/email", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
-// app.use("/auth/sign-up/email", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
-// app.use("/auth/reset-password", rateLimiter({ windowMs: 60 * 1000, limit: 3 }))
+app.use("/auth/sign-in/email", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
+app.use("/auth/sign-up/email", rateLimiter({ windowMs: 60 * 1000, limit: 5 }))
+app.use("/auth/reset-password", rateLimiter({ windowMs: 60 * 1000, limit: 3 }))
 
 app.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
 

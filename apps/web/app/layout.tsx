@@ -1,12 +1,12 @@
 import type { PropsWithChildren } from "react"
 import { Geist_Mono, Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/ThemeProvider"
+import { ReactQueryProvider } from "@/components/ReactQueryProvider"
+import { Toaster } from "@workspace/ui/components/Sonner"
 import { cn } from "@workspace/ui/lib/utils"
 
 // @ts-ignore
 import "@workspace/ui/globals.css"
-import { ReactQueryProvider } from "@/components/ReactQueryProvider"
-import { Toaster } from "@workspace/ui/components/Sonner"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 

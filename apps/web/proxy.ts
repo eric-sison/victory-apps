@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3001"
 const PUBLIC_ROUTES = ["/auth/sign-in", "/auth/forgot-password", "/auth/reset-password"]
 const PUBLIC_PREFIXES = ["/api", "/_next"]
 
-export type Session = {
+export type AuthSession = {
   session: typeof auth.$Infer.Session.session | null
   user: typeof auth.$Infer.Session.user | null
 }
@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
     headers: request.headers,
   })
 
-  const session = (await res.json()) as Session
+  const session = (await res.json()) as AuthSession
 
   const isAuthenticated = !!(session?.user && session?.session)
 

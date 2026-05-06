@@ -1,4 +1,4 @@
-import { LucideIcon, SquareDashedMousePointerIcon } from "lucide-react"
+import { Gauge, LayoutGrid, LucideIcon, Mail, Settings, UserPen, Users } from "lucide-react"
 import { UrlObject } from "url"
 
 export type Item = {
@@ -17,14 +17,42 @@ export type SidebarItem = {
   >
 }
 
-export const SIDEBAR_CONTENT_ITEMS: SidebarItem[] = [
+export const SIDEBAR_CONTENT_ITEMS = (userId?: string): SidebarItem[] => [
   {
     group: "General",
     items: [
       {
         title: "Dashboard",
         path: "/dashboard",
-        icon: SquareDashedMousePointerIcon,
+        icon: Gauge,
+      },
+      {
+        title: "Apps",
+        path: "/apps",
+        icon: LayoutGrid,
+      },
+      {
+        title: "Users",
+        path: "/users",
+        icon: Users,
+      },
+
+      {
+        title: "Settings",
+        path: "/settings",
+        icon: Settings,
+        subItems: [
+          {
+            title: "Profile",
+            path: "/profile",
+            icon: UserPen,
+          },
+          {
+            title: "Email Settings",
+            path: "/email",
+            icon: Mail,
+          },
+        ],
       },
     ],
   },

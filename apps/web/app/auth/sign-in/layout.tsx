@@ -1,5 +1,5 @@
-import { PropsWithChildren, Suspense } from "react"
+import { PropsWithChildren } from "react"
 
 export default function AuthLayout({ children }: PropsWithChildren) {
-  return <Suspense fallback={<>Loading...</>}>{children}</Suspense>
+  return <>{children}</>
 }

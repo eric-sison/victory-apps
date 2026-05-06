@@ -19,6 +19,7 @@ import { Input } from "@workspace/ui/components/Input"
 import { Button } from "@workspace/ui/components/Button"
 import { toast } from "@workspace/ui/components/Sonner"
 import { ErrorMessages } from "@/utils/error-messages"
+import { Spinner } from "@workspace/ui/components/Spinner"
 
 type CredentialsSignInFormProps = {
   callbackURL?: string
@@ -50,15 +51,15 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
 
             switch (ctx.error.status) {
               case 401: {
-                errorMessage = ErrorMessages[401].INVALID_CREDENTIALS
+                errorMessage = ErrorMessages[401].INVALID_CREDENTIALS.short
                 break
               }
               case 429: {
-                errorMessage = ErrorMessages[429].TOO_MANY_REQUESTS
+                errorMessage = ErrorMessages[429].TOO_MANY_REQUESTS.short
                 break
               }
               case 500: {
-                errorMessage = ErrorMessages[500].SERVER_ERROR
+                errorMessage = ErrorMessages[500].SERVER_ERROR.short
                 break
               }
             }
@@ -129,7 +130,7 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
       <CardFooter>
         <Field>
           <Button disabled={isPending} type="submit" form="credentials-signin-form">
-            Sign In
+            {isPending && <Spinner />} <span>{isPending ? "Signing in..." : "Sign In"}</span>
           </Button>
         </Field>
       </CardFooter>
