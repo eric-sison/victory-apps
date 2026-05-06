@@ -1,14 +1,9 @@
 # =============================================================================
 # victory-apps — docker/docker-compose.yaml
-# Runs all four services: postgres, pgadmin, api (Hono), web (Next.js)
 #
 # Run from the repo root:
-#   cp .env.example .env
-#   docker compose -f docker/docker-compose.yaml build
 #   docker compose -f docker/docker-compose.yaml up -d
-#
-# Or cd into docker/ first:
-#   docker compose build
+# Or from docker/:
 #   docker compose up -d
 # =============================================================================
 
@@ -29,8 +24,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - internal
+      - public # required: internal=true blocks host port publishing
     ports:
-      - "127.0.0.1:5432:5432" # localhost only — never expose to 0.0.0.0 in prod
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -47,7 +43,7 @@ services:
         max-file: "3"
 
   # ---------------------------------------------------------------------------
-  # pgAdmin (optional — can be omitted in production)
+  # pgAdmin (optional — omit in production)
   # ---------------------------------------------------------------------------
   pgadmin:
     image: dpage/pgadmin4:latest
@@ -62,12 +58,13 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: "True"
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
       PGADMIN_CONFIG_LOGIN_BANNER: '"Authorized users only."'
-      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40 # ERROR only
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-      - ../pg-admin.json:/pgadmin4/servers.json:ro # pg-admin.json lives at repo root
+      - ../pg-admin.json:/pgadmin4/servers.json:ro
     networks:
-      - internal
+      - internal # talks to postgres
+      - public # required for host port 5050 to be published
     ports:
       - "127.0.0.1:5050:80"
     security_opt:
@@ -80,11 +77,10 @@ services:
 
   # ---------------------------------------------------------------------------
   # Migrator — runs once: db:migrate + seed:admin, then exits
-  # api and web will not start until this completes successfully.
   # ---------------------------------------------------------------------------
   migrator:
     build:
-      context: .. # repo root — where package.json, apps/, packages/ live
+      context: ..
       dockerfile: docker/Dockerfile
       target: migrator
     container_name: victory-migrator
@@ -93,7 +89,7 @@ services:
       postgres:
         condition: service_healthy
     env_file:
-      - .env # .env lives in docker/ alongside this compose file
+      - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -129,7 +125,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3001"
-      # Override DATABASE_URL so the hostname resolves inside Docker network
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -142,7 +137,14 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3001/api/health || exit 1"]
+      # wget/curl/sh are not available in distroless — use Node.js http module
+      test:
+        [
+          "CMD",
+          "/nodejs/bin/node",
+          "-e",
+          "require('http').get('http://localhost:3001/api/healthcheck',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))",
+        ]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -174,6 +176,8 @@ services:
       NODE_ENV: production
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
+      API_BASE_URL: http://victory-api:3001 # SSR override
+      # BETTER_AUTH_URL: http://victory-api:3001/api/auth # SSR override
     networks:
       - public
     ports:
@@ -181,7 +185,14 @@ services:
     security_opt:
       - no-new-privileges:true
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/ || exit 1"]
+      # wget/curl/sh are not available in distroless — use Node.js http module
+      test:
+        [
+          "CMD",
+          "/nodejs/bin/node",
+          "-e",
+          "require('http').get('http://localhost:3000/',(r)=>{process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+        ]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -201,10 +212,8 @@ volumes:
 
 networks:
   internal:
-    # Postgres + pgAdmin + API — not reachable from outside
     driver: bridge
-    internal: true
+    internal: true # containers on this network cannot reach the internet
   public:
-    # API + Web — reachable from the host / reverse proxy
     driver: bridge
-    internal: false
+    internal: false # host port publishing works here

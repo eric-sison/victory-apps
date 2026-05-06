@@ -4,12 +4,23 @@
   "type": "module",
   "private": true,
   "files": [
-    "dist"
+    "dist",
+    "src",
+    "drizzle.config.ts"
   ],
   "exports": {
-    "./server": "./src/lib/auth.ts",
-    "./client": "./src/lib/auth-client.ts",
-    "./schema": "./src/auth-schema.ts"
+    "./server": {
+      "types": "./src/lib/auth.ts",
+      "default": "./dist/lib/auth.js"
+    },
+    "./client": {
+      "types": "./src/lib/auth-client.ts",
+      "default": "./dist/lib/auth-client.js"
+    },
+    "./schema": {
+      "types": "./src/auth-schema.ts",
+      "default": "./dist/auth-schema.js"
+    }
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

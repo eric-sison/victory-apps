@@ -20,6 +20,30 @@
     "node": ">=20"
   },
   "pnpm": {
+    "packageExtensions": {
+      "better-auth": {
+        "peerDependenciesMeta": {
+          "next": {
+            "optional": true
+          },
+          "react": {
+            "optional": true
+          },
+          "react-dom": {
+            "optional": true
+          },
+          "@tanstack/react-start": {
+            "optional": true
+          },
+          "srvx": {
+            "optional": true
+          },
+          "crossws": {
+            "optional": true
+          }
+        }
+      }
+    },
     "overrides": {
       "glob": "^10",
       "rimraf": "^5",
