@@ -182,3 +182,16 @@ log "To tail all logs:       docker compose -f $COMPOSE_FILE -p $PROJECT_NAME lo
 log "To tail a service:      docker compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f api"
 log "To stop everything:     docker compose -f $COMPOSE_FILE -p $PROJECT_NAME down"
 log "To rebuild from scratch: $0 --no-cache"
+
+# -----------------------------------------------------------------------------
+# Cleanup — Remove migrator image
+# -----------------------------------------------------------------------------
+header "Cleanup"
+
+if docker image ls --format '{{.Repository}}' | grep -q "^victory-migrator$"; then
+  log "Removing migrator image (no longer needed)..."
+  docker image rm -f victory-migrator
+  success "Migrator image removed."
+else
+  warn "Migrator image not found, skipping."
+fi

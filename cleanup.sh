@@ -4,7 +4,7 @@
 # Usage: ./undeploy.sh [--volumes] [--images] [--all]
 #
 #   --volumes   Also remove named volumes  (postgres_data, pgadmin_data)
-#   --images    Also remove built images   (api, web, migrator)
+#   --images    Also remove built images   (api, web)
 #   --all       Equivalent to --volumes --images
 #
 # Run from the repo root.
@@ -22,7 +22,6 @@ PROJECT_NAME="victory"
 IMAGES=(
   "victory-api"
   "victory-web"
-  "victory-migrator"
 )
 
 # Named volumes defined in docker-compose.yaml
