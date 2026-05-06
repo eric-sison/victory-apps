@@ -1,9 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  typedRoutes: true,
   poweredByHeader: false,
-  // serverExternalPackages: ["drizzle-orm", "pg"],
   transpilePackages: ["@workspace/ui", "@workspace/auth"],
   async headers() {
     return [

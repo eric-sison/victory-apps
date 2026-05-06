@@ -23,7 +23,6 @@ import { usePathname, useRouter } from "next/navigation"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/Collapsible"
 import { ChevronRight } from "lucide-react"
 import Link from "next/link"
-import Image from "next/image"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,24 +59,6 @@ export const AppSidebar: FunctionComponent = () => {
 
   return (
     <Sidebar collapsible="icon" variant="floating">
-      {/* <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              className="hover:bg-transparent"
-              render={
-                <Link href="/modules">
-                  <Image src="/logo.svg" alt="logo" height={30} width={30} className="size-7" />
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate text-lg font-semibold tracking-wider">FlowLink</span>
-                  </div>
-                </Link>
-              }
-            />
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader> */}
-
       <SidebarContent>
         {sidebarItems(user?.id).map((sidebarItem, index) => (
           <SidebarGroup key={index}>

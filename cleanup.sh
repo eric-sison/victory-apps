@@ -100,13 +100,25 @@ compose() {
 # -----------------------------------------------------------------------------
 header "Step 1/3 — Stopping containers"
 
-if compose ps -q 2>/dev/null | grep -q .; then
-  log "Bringing down all containers..."
+RUNNING=$(compose ps -qa 2>/dev/null)
+
+if [[ -n "$RUNNING" ]]; then
+  log "Bringing down all containers (including exited)..."
   compose down --remove-orphans
   success "Containers stopped and removed."
 else
-  warn "No running containers found for project '${PROJECT_NAME}'. Skipping."
+  log "No containers found for project '${PROJECT_NAME}'. Ensuring clean state..."
+  compose down --remove-orphans 2>/dev/null || true
+  success "Done."
 fi
+
+log "Pruning stopped containers..."
+docker container prune -f
+success "Stopped containers pruned."
+
+log "Pruning unused networks..."
+docker network prune -f
+success "Unused networks pruned."
 
 # -----------------------------------------------------------------------------
 # Step 2 — Remove named volumes  (opt-in: --volumes / --all)
