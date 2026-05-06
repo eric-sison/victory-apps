@@ -10,9 +10,32 @@ export const auth = betterAuth({
     usePlural: true,
     schema: authSchema,
   }),
+
+  rateLimit: {
+    window: 60,
+    max: 10,
+  },
+
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60, // 5 mins
+    },
+  },
+
   emailAndPassword: {
     enabled: true,
+    autoSignIn: true,
+    requireEmailVerification: false,
   },
+
   trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],
+
+  advanced: {
+    cookiePrefix: "_ssid",
+  },
+
   plugins: [openAPI(), admin()],
 })

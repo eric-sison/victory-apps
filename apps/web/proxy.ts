@@ -5,13 +5,19 @@ const API_BASE_URL = process.env.API_BASE_URL ?? "http://localhost:3001"
 const PUBLIC_ROUTES = ["/auth/sign-in", "/auth/forgot-password", "/auth/reset-password"]
 const PUBLIC_PREFIXES = ["/api", "/_next"]
 
+export type Session = {
+  session: typeof auth.$Infer.Session.session | null
+  user: typeof auth.$Infer.Session.user | null
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   const isPublicRoute = PUBLIC_ROUTES.includes(pathname)
   const isPublicPrefix = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix))
 
-  if (isPublicRoute || isPublicPrefix) {
+  // Skip session check entirely for API/_next routes
+  if (isPublicPrefix) {
     return NextResponse.next()
   }
 
@@ -19,19 +25,21 @@ export async function proxy(request: NextRequest) {
     headers: request.headers,
   })
 
-  const session = (await res.json()) as {
-    session: typeof auth.$Infer.Session.session | null
-    user: typeof auth.$Infer.Session.user | null
+  const session = (await res.json()) as Session
+
+  const isAuthenticated = !!(session?.user && session?.session)
+
+  // Redirect authenticated users away from auth routes
+  if (isAuthenticated && isPublicRoute) {
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
-  if (!session?.user || !session?.session) {
+  // Redirect unauthenticated users away from protected routes
+  if (!isAuthenticated && !isPublicRoute) {
     const redirectUrl = new URL("/auth/sign-in", request.url)
     redirectUrl.searchParams.set("callbackUrl", pathname)
-    return NextResponse.redirect(redirectUrl)
-  }
 
-  if ((session?.user || session?.session) && isPublicRoute) {
-    return NextResponse.redirect(new URL("/", request.url))
+    return NextResponse.redirect(redirectUrl)
   }
 
   return NextResponse.next()

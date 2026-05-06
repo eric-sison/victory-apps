@@ -7,18 +7,18 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile"
 import { cn } from "@workspace/ui/lib/utils"
-import { Button } from "@workspace/ui/components/Button.js"
-import { Input } from "@workspace/ui/components/Input.js"
-import { Separator } from "@workspace/ui/components/Separator.js"
+import { Button } from "@workspace/ui/components/Button"
+import { Input } from "@workspace/ui/components/Input"
+import { Separator } from "@workspace/ui/components/Separator"
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from "@workspace/ui/components/Sheet.js"
-import { Skeleton } from "@workspace/ui/components/Skeleton.js"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/Tooltip.js"
+} from "@workspace/ui/components/Sheet"
+import { Skeleton } from "@workspace/ui/components/Skeleton"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/Tooltip"
 import { PanelLeftIcon } from "lucide-react"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
