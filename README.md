@@ -32,7 +32,7 @@ pnpm install
 
 ### 3. Configure Root Environment Variables
 
-The root `.env` controls the local Docker services (PostgreSQL and pgAdmin). It is only used for local development — Docker deployment uses `docker/.env` instead.
+The root `.env` controls the local Docker services (PostgreSQL, pgAdmin, and Mailpit). It is only used for local development — Docker deployment uses `docker/.env` instead.
 
 ```bash
 cp .env.example .env
@@ -49,17 +49,25 @@ PGADMIN_DEFAULT_EMAIL=your_email@example.com
 PGADMIN_DEFAULT_PASSWORD=your_secure_password
 ```
 
-### 4. Start the Database
+### 4. Start Local Services
 
 ```bash
 docker compose up -d
 ```
 
-This starts PostgreSQL on port `5432` and pgAdmin on port `5050`. Verify with:
+This starts three services:
+
+- **PostgreSQL** on port `5432`
+- **pgAdmin** on port `5050` — database GUI at http://localhost:5050
+- **Mailpit** on port `8025` — email inbox at http://localhost:8025 (SMTP trap on port `1025`)
+
+Verify all three are running with:
 
 ```bash
 docker compose ps
 ```
+
+> In development, all outgoing emails are captured by Mailpit instead of being delivered. Open http://localhost:8025 to inspect them.
 
 ### 5. Configure Environment Variables for `packages/auth`
 
@@ -119,7 +127,23 @@ BETTER_AUTH_URL=http://localhost:3001/api/auth
 
 # CORS — comma-separated list of allowed origins
 ALLOWED_ORIGINS=http://localhost:3000
+
+# Frontend — used to construct links in emails (password reset, etc.)
+RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/reset-password
+
+# SMTP — in dev this points to Mailpit (docker compose up)
+# In production, replace with your real SMTP provider credentials
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_SECURE=false
+SMTP_USER=dev
+SMTP_PASSWORD=dev
+SMTP_FROM=noreply@example.com
 ```
+
+> `BETTER_AUTH_SECRET` must be identical to the value in `packages/auth/.env`. A mismatch will cause all session validation to fail.
+
+> `SMTP_*` variables work for both dev (Mailpit) and production (any real SMTP provider) without any code changes — just update the values.
 
 ### 8. Configure Environment Variables for `apps/web`
 
@@ -156,13 +180,15 @@ pnpm --filter web dev
 
 ## Ports at a Glance
 
-| Service    | URL                            |
-| ---------- | ------------------------------ |
-| Web app    | http://localhost:3000          |
-| API        | http://localhost:3001          |
-| API docs   | http://localhost:3001/api/docs |
-| pgAdmin    | http://localhost:5050          |
-| PostgreSQL | localhost:5432                 |
+| Service         | URL                            |
+| --------------- | ------------------------------ |
+| Web app         | http://localhost:3000          |
+| API             | http://localhost:3001          |
+| API docs        | http://localhost:3001/api/docs |
+| pgAdmin         | http://localhost:5050          |
+| Mailpit (inbox) | http://localhost:8025          |
+| PostgreSQL      | localhost:5432                 |
+| Mailpit (SMTP)  | localhost:1025                 |
 
 ---
 
@@ -201,6 +227,17 @@ ALLOWED_ORIGINS=http://localhost:3000
 DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=use_a_strong_password
 DEFAULT_ADMIN_NAME=Super Admin
+
+# Frontend — used to construct links in emails (password reset, etc.)
+RESET_PASSWORD_CALLBACK=https://yourdomain.com/auth/reset-password
+
+# SMTP — replace with your real provider credentials in production
+SMTP_HOST=smtp.yourmailprovider.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_smtp_user
+SMTP_PASSWORD=your_smtp_password
+SMTP_FROM=noreply@yourdomain.com
 ```
 
 > `BETTER_AUTH_SECRET` must be identical across all services. A mismatch will cause all session validation to fail.
@@ -247,6 +284,12 @@ If port `3001` or `3000` is already occupied, update the `PORT` variable in the 
 
 **pgAdmin login**
 Use the credentials defined under `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` in your `.env`.
+
+**Emails not arriving in development**
+Make sure the Mailpit container is running (`docker compose ps`). All dev emails are captured at http://localhost:8025 — nothing is delivered to real inboxes. If the API starts before Mailpit is ready, restart the API.
+
+**Password reset link goes to an error page**
+Ensure `RESET_PASSWORD_CALLBACK` in `apps/api/.env` points to your frontend reset page (e.g. `http://localhost:3000/auth/reset-password`). The value must be a full URL including protocol.
 
 **Volume removal fails during cleanup**
 If `deploy:down:volumes` errors with "volume is in use", run `deploy:down` first to ensure all containers are fully stopped and removed before retrying.

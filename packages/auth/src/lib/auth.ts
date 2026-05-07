@@ -30,7 +30,7 @@ export const auth = betterAuth({
 
       try {
         await mailer.sendMail({
-          from: "noreply@example.com",
+          from: process.env.SMTP_FROM,
           to: user.email,
           subject: "Reset your password",
           html: `

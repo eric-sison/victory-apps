@@ -34,9 +34,25 @@ BETTER_AUTH_URL=http://localhost:3001/api/auth
 
 # CORS — comma-separated list of allowed origins
 ALLOWED_ORIGINS=http://localhost:3000
+
+# Frontend — used to construct links in emails (password reset, etc.)
+RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/reset-password
+
+# SMTP — in dev this points to Mailpit (docker compose up)
+# In production, replace with your real SMTP provider credentials
+SMTP_HOST=localhost
+SMTP_PORT=1025
+SMTP_SECURE=false
+SMTP_USER=dev
+SMTP_PASSWORD=dev
+SMTP_FROM=noreply@example.com
 ```
 
 > `BETTER_AUTH_SECRET` must be identical to the value in `packages/auth/.env`. A mismatch will cause all session validation to fail.
+
+> `SMTP_*` variables work identically in dev (Mailpit) and production (any real SMTP provider). Only the values change between environments — no code changes required.
+
+> `RESET_PASSWORD_CALLBACK` must point to the frontend reset password page. Better Auth generates a token and appends it as a `?token=` query parameter to this URL.
 
 ---
 

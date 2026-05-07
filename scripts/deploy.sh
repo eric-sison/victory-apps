@@ -184,9 +184,13 @@ log "To stop everything:     docker compose -f $COMPOSE_FILE -p $PROJECT_NAME do
 log "To rebuild from scratch: $0 --no-cache"
 
 # -----------------------------------------------------------------------------
-# Cleanup — Remove migrator image
+# Cleanup — Remove migrator container, image, and dangling layers
 # -----------------------------------------------------------------------------
 header "Cleanup"
+
+log "Removing migrator container if present..."
+docker rm -f victory-migrator 2>/dev/null || true
+success "Migrator container removed."
 
 if docker image ls --format '{{.Repository}}' | grep -q "^victory-migrator$"; then
   log "Removing migrator image (no longer needed)..."
@@ -195,3 +199,7 @@ if docker image ls --format '{{.Repository}}' | grep -q "^victory-migrator$"; th
 else
   warn "Migrator image not found, skipping."
 fi
+
+log "Pruning dangling images..."
+docker image prune -f
+success "Dangling images pruned."
