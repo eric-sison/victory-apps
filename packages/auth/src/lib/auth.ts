@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import db from "../db-conn.js"
 import * as authSchema from "../auth-schema.js"
+import { mailer } from "../mailer.js"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -24,6 +25,26 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: true,
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, token }) => {
+      const callbackUrl = `${process.env.RESET_PASSWORD_CALLBACK}?token=${token}`
+
+      try {
+        await mailer.sendMail({
+          from: "noreply@example.com",
+          to: user.email,
+          subject: "Reset your password",
+          html: `
+          <p>Hi ${user.name ?? user.email},</p>
+          <p>Click the link below to reset your password. This link expires in 1 hour.</p>
+          <p><a href="${callbackUrl}">Reset password</a></p>
+          <p>If you did not request a password reset, you can safely ignore this email.</p>
+        `,
+        })
+      } catch (err) {
+        // SMTP failures are logged server-side but not exposed to the client.
+        console.error("[Auth] Failed to send password reset email:", err)
+      }
+    },
   },
 
   trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],

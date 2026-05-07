@@ -12,6 +12,19 @@ const envSchema = z.object({
     .transform((s) => s.split(",").map((o) => o.trim()))
     .pipe(z.array(z.url())),
 
+  // SMTP — dev: points to Mailpit; prod: real SMTP provider
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.coerce.number().min(1).max(65535).default(1025),
+  SMTP_SECURE: z
+    .string()
+    .transform((v) => v === "true")
+    .default(false),
+  SMTP_USER: z.string().min(1),
+  SMTP_PASSWORD: z.string().min(1),
+  SMTP_FROM: z.email(),
+
+  RESET_PASSWORD_CALLBACK: z.url(),
+
   // pgAdmin (optional — only needed in local/dev)
   PGADMIN_DEFAULT_EMAIL: z.email().optional(),
   PGADMIN_DEFAULT_PASSWORD: z.string().min(8).optional(),

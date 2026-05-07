@@ -58,10 +58,45 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ---------------------------------------------------------------------------
+  # Mailpit — dev-only email capture (SMTP trap + web UI)
+  # All outgoing mail in development is caught here instead of being delivered.
+  # Configure your app's SMTP settings:
+  #   host: localhost (or "mailpit" from within other containers)
+  #   port: 1025
+  #   no auth, no TLS required
+  # Web UI: http://localhost:8025
+  # ---------------------------------------------------------------------------
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: mailpit-dev
+    restart: unless-stopped
+    networks:
+      - db_network
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP — point your app here
+      - "127.0.0.1:8025:8025" # Web UI — http://localhost:8025
+    environment:
+      MP_MAX_MESSAGES: 500 # keep last 500 messages before auto-pruning
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1 # accept any user/password (dev convenience)
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    volumes:
+      - mailpit_data:/data
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
 volumes:
   postgres_data:
     driver: local
   pgadmin_data:
+    driver: local
+  mailpit_data:
     driver: local
 
 networks:
