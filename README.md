@@ -1,7 +1,5 @@
 # victory-apps
 
-A full-stack monorepo built with Next.js, Hono, Better Auth, and PostgreSQL.
-
 ---
 
 ## Prerequisites
