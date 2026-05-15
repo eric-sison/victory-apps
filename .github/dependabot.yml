@@ -1,0 +1,147 @@
+version: 2
+
+updates:
+  # ─── Root & all workspace packages (npm ecosystem covers pnpm) ────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "npm"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+      include: "scope"
+    groups:
+      # Bundle all React-related updates into one PR
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Bundle all TanStack updates into one PR
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      # Bundle all TypeScript ESLint updates into one PR
+      typescript-eslint:
+        patterns:
+          - "@typescript-eslint/*"
+          - "typescript-eslint"
+      # Bundle all ESLint plugins into one PR
+      eslint:
+        patterns:
+          - "eslint*"
+          - "@eslint/*"
+          - "eslint-*"
+      # Bundle Drizzle ORM + Kit together
+      drizzle:
+        patterns:
+          - "drizzle-orm"
+          - "drizzle-kit"
+
+  # ─── apps/web ─────────────────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "app:web"
+    commit-message:
+      prefix: "chore(deps)[web]"
+      include: "scope"
+
+  # ─── apps/api ─────────────────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/apps/api"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "app:api"
+    commit-message:
+      prefix: "chore(deps)[api]"
+      include: "scope"
+
+  # ─── packages/auth ────────────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/auth"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "package:auth"
+    commit-message:
+      prefix: "chore(deps)[auth]"
+      include: "scope"
+
+  # ─── packages/ui ──────────────────────────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/packages/ui"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "npm"
+      - "package:ui"
+    commit-message:
+      prefix: "chore(deps)[ui]"
+      include: "scope"
+
+  # ─── Docker ───────────────────────────────────────────────────────────────
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "chore(deps)[docker]"
+      include: "scope"
+
+  # ─── GitHub Actions ───────────────────────────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Manila"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(deps)[ci]"
+      include: "scope"
