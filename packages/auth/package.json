@@ -30,7 +30,7 @@
     "seed:admin": "tsx src/seed-admin.ts"
   },
   "dependencies": {
-    "better-auth": "^1.6.9",
+    "better-auth": "^1.6.11",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "nodemailer": "^8.0.7",
