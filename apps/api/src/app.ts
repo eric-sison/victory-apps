@@ -3,6 +3,7 @@ import type { AppEnv } from "./types/app-env.js"
 import { OpenAPIHono } from "@hono/zod-openapi"
 import { Scalar } from "@scalar/hono-api-reference"
 import { auth } from "@workspace/auth/server"
+import { contextStorage } from "hono/context-storage"
 import { cors } from "./middleware/cors.js"
 import { logger } from "./middleware/logger.js"
 import { requestId } from "hono/request-id"
@@ -18,6 +19,7 @@ export const app = new OpenAPIHono<AppEnv>().basePath("/api")
 app.use(secureHeaders())
 app.use(cors())
 app.use(requestId())
+app.use(contextStorage())
 app.use(logger())
 app.use(authSession)
 
