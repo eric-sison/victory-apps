@@ -16,6 +16,19 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
       include: "scope"
+    ignore:
+      # Transitive dep pinned by minimatch@3.x (via eslint-plugin-react).
+      # Bumping directly has no effect; upgrade eslint-plugin-react instead.
+      - dependency-name: "brace-expansion"
+      # Transitive dep pinned by flat-cache (ESLint's cache layer).
+      # Not a direct dep anywhere; bump has no effect.
+      - dependency-name: "flatted"
+      # Major version — needs a deliberate coordinated migration across the monorepo.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Major version — needs deliberate migration alongside typescript-eslint and plugins.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
     groups:
       # Bundle all React-related updates into one PR
       react:
@@ -60,6 +73,13 @@ updates:
     commit-message:
       prefix: "chore(deps)[web]"
       include: "scope"
+    ignore:
+      # Major version — needs a deliberate coordinated migration across the monorepo.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Major version — needs deliberate migration alongside typescript-eslint and plugins.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   # ─── apps/api ─────────────────────────────────────────────────────────────
   - package-ecosystem: "npm"
@@ -76,6 +96,14 @@ updates:
     commit-message:
       prefix: "chore(deps)[api]"
       include: "scope"
+    ignore:
+      # Major version — needs a deliberate coordinated migration across the monorepo.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Keep @types/node aligned with the node:20-slim Docker runtime.
+      # Jumping to 21+ would mismatch the actual Node.js version in production.
+      - dependency-name: "@types/node"
+        versions: [">=21"]
 
   # ─── packages/auth ────────────────────────────────────────────────────────
   - package-ecosystem: "npm"
@@ -92,6 +120,10 @@ updates:
     commit-message:
       prefix: "chore(deps)[auth]"
       include: "scope"
+    ignore:
+      # Major version — needs a deliberate coordinated migration across the monorepo.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   # ─── packages/ui ──────────────────────────────────────────────────────────
   - package-ecosystem: "npm"
@@ -108,6 +140,13 @@ updates:
     commit-message:
       prefix: "chore(deps)[ui]"
       include: "scope"
+    ignore:
+      # Major version — needs a deliberate coordinated migration across the monorepo.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # Major version — needs deliberate migration alongside typescript-eslint and plugins.
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
 
   # ─── Docker ───────────────────────────────────────────────────────────────
   - package-ecosystem: "docker"
@@ -123,6 +162,11 @@ updates:
     commit-message:
       prefix: "chore(deps)[docker]"
       include: "scope"
+    ignore:
+      # Major Node.js runtime upgrades need deliberate testing.
+      # The whole stack (Dockerfile, @types/node, CI) must be updated together.
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
 
   # ─── GitHub Actions ───────────────────────────────────────────────────────
   - package-ecosystem: "github-actions"
