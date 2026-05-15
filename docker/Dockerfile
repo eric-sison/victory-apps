@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 # BASE — build tooling (Debian slim / glibc)
 # -----------------------------------------------------------------------------
-FROM node:20-slim AS base
+FROM node:26-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -167,7 +167,7 @@ ENV PORT=3000
 CMD ["server.js"]
 
 ### Migrator — slim + pnpm (needs shell + pnpm run for scripts)
-FROM node:20-slim AS migrator
+FROM node:26-slim AS migrator
 
 # Install pnpm directly via npm rather than corepack.
 # Corepack installs to the calling user's home cache (~/.cache/node/corepack).
