@@ -30,6 +30,10 @@
     "node": ">=20"
   },
   "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss"
+    ],
     "packageExtensions": {
       "better-auth": {
         "peerDependenciesMeta": {
