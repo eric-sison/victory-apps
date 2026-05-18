@@ -41,7 +41,7 @@
     "@types/pg": "^8.20.0",
     "@workspace/typescript-config": "workspace:*",
     "drizzle-kit": "^0.31.10",
-    "tsx": "^4.7.1",
+    "tsx": "^4.22.1",
     "typescript": "^5.9.3"
   }
 }
