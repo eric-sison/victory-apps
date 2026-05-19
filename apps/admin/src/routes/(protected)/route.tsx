@@ -1,6 +1,8 @@
-import { Navbar } from "#/components/features/Navbar"
+import { AppNavBar } from "#/components/features/AppNavbar"
+import { AppSidebar } from "#/components/features/AppSidebar"
 import { requireAuth } from "#/lib/auth-fns"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
+import { SidebarInset, SidebarProvider } from "@workspace/ui/components/Sidebar"
 
 export const Route = createFileRoute("/(protected)")({
   beforeLoad: async ({ location }) =>
@@ -16,12 +18,14 @@ function RouteComponent() {
   const { user } = Route.useRouteContext()
 
   return (
-    <div className="h-full">
-      <Navbar user={user} />
-
-      <main className="px-10 py-5">
-        <Outlet />
-      </main>
-    </div>
+    <SidebarProvider>
+      <AppSidebar user={user} />
+      <SidebarInset>
+        <AppNavBar user={user} />
+        <main className="flex-1 overflow-y-auto p-5">
+          <Outlet />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

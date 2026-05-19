@@ -5,7 +5,5 @@ export const Route = createFileRoute("/(protected)/dashboard/")({
 })
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext()
-
-  return <div>Hello {user.name}!</div>
+  return <div>Welcome!</div>
 }

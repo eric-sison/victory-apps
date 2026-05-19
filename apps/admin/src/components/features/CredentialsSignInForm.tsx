@@ -45,6 +45,7 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
       await authClient.signIn.email({
         ...data,
         callbackURL: callbackURL ?? "/dashboard",
+        rememberMe: true, // TODO: add control here
         fetchOptions: {
           onError(ctx) {
             let errorMessage = ""
