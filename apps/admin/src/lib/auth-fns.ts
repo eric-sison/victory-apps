@@ -7,7 +7,9 @@ import z from "zod"
 export const getSession = createServerFn().handler(async () => {
   try {
     const headers = getRequestHeaders()
-    const session = await auth.api.getSession({ headers })
+    const session = await auth.api.getSession({
+      headers,
+    })
 
     return session
   } catch (error) {
@@ -32,25 +34,14 @@ export const requireAuth = createServerFn({ method: "GET" })
     })
   )
   .handler(async ({ data }) => {
-    try {
-      const session = await getSession()
+    const session = await getSession()
 
-      if (!session) {
-        throw redirect({
-          to: "/auth/sign-in",
-          search: {
-            redirectTo: data.redirectTo,
-          },
-        })
-      }
-
-      return session
-    } catch (error) {
+    if (!session) {
       throw redirect({
         to: "/auth/sign-in",
-        search: {
-          redirectTo: data.redirectTo,
-        },
+        search: { redirectTo: data.redirectTo },
       })
     }
+
+    return session
   })
