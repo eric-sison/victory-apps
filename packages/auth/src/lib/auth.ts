@@ -1,11 +1,13 @@
 import { admin, openAPI } from "better-auth/plugins"
 import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import db from "../db-conn.js"
-import * as authSchema from "../auth-schema.js"
+import { tanstackStartCookies } from "better-auth/tanstack-start"
 import { mailer } from "../mailer.js"
+import * as authSchema from "../auth-schema.js"
+import db from "../db-conn.js"
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
   database: drizzleAdapter(db, {
     provider: "pg",
     usePlural: true,
@@ -50,8 +52,15 @@ export const auth = betterAuth({
   trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],
 
   advanced: {
-    cookiePrefix: "_ssid",
+    cookies: {
+      session_token: {
+        name: "_ssid._token",
+      },
+      session_data: {
+        name: "_ssid._data",
+      },
+    },
   },
 
-  plugins: [openAPI(), admin()],
+  plugins: [openAPI(), admin(), tanstackStartCookies()],
 })

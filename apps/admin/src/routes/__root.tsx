@@ -1,11 +1,14 @@
+import type { QueryClient } from "@tanstack/react-query"
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
 import { TanStackDevtools } from "@tanstack/react-devtools"
-import type { QueryClient } from "@tanstack/react-query"
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools"
+import { Toaster } from "@workspace/ui/components/Sonner"
+import { themeScript } from "#/utils/theme"
 import appCss from "@workspace/ui/globals.css?url"
 
-interface MyRouterContext {
+type MyRouterContext = {
   queryClient: QueryClient
 }
 
@@ -20,7 +23,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "Victory | Admin",
       },
     ],
     links: [
@@ -31,17 +34,21 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <div>Not found!</div>,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-svh antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
+      <body className="h-full overflow-x-hidden">
         {children}
+        <Toaster />
         <TanStackDevtools
+          eventBusConfig={{ debug: false }}
           config={{
             position: "bottom-right",
           }}
@@ -54,6 +61,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               name: "Tanstack Query",
               render: <ReactQueryDevtoolsPanel />,
             },
+            formDevtoolsPlugin(),
           ]}
         />
         <Scripts />
