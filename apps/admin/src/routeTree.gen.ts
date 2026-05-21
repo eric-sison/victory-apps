@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as protectedRouteRouteImport } from './routes/(protected)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
+import { Route as protectedUsersIndexRouteImport } from './routes/(protected)/users/index'
+import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
+import { Route as protectedSessionsIndexRouteImport } from './routes/(protected)/sessions/index'
 import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
 
 const protectedRouteRoute = protectedRouteRouteImport.update({
@@ -28,6 +31,21 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/auth/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any)
+const protectedUsersIndexRoute = protectedUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedSettingsIndexRoute = protectedSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedSessionsIndexRoute = protectedSessionsIndexRouteImport.update({
+  id: '/sessions/',
+  path: '/sessions/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
 const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -38,11 +56,17 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/dashboard/': typeof protectedDashboardIndexRoute
+  '/sessions/': typeof protectedSessionsIndexRoute
+  '/settings/': typeof protectedSettingsIndexRoute
+  '/users/': typeof protectedUsersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/dashboard': typeof protectedDashboardIndexRoute
+  '/sessions': typeof protectedSessionsIndexRoute
+  '/settings': typeof protectedSettingsIndexRoute
+  '/users': typeof protectedUsersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,18 +74,36 @@ export interface FileRoutesById {
   '/(protected)': typeof protectedRouteRouteWithChildren
   '/auth/sign-in': typeof AuthSignInRoute
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
+  '/(protected)/sessions/': typeof protectedSessionsIndexRoute
+  '/(protected)/settings/': typeof protectedSettingsIndexRoute
+  '/(protected)/users/': typeof protectedUsersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/sign-in' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/auth/sign-in'
+    | '/dashboard/'
+    | '/sessions/'
+    | '/settings/'
+    | '/users/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/sign-in' | '/dashboard'
+  to:
+    | '/'
+    | '/auth/sign-in'
+    | '/dashboard'
+    | '/sessions'
+    | '/settings'
+    | '/users'
   id:
     | '__root__'
     | '/'
     | '/(protected)'
     | '/auth/sign-in'
     | '/(protected)/dashboard/'
+    | '/(protected)/sessions/'
+    | '/(protected)/settings/'
+    | '/(protected)/users/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,6 +135,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(protected)/users/': {
+      id: '/(protected)/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof protectedUsersIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/settings/': {
+      id: '/(protected)/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof protectedSettingsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/sessions/': {
+      id: '/(protected)/sessions/'
+      path: '/sessions'
+      fullPath: '/sessions/'
+      preLoaderRoute: typeof protectedSessionsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
     '/(protected)/dashboard/': {
       id: '/(protected)/dashboard/'
       path: '/dashboard'
@@ -105,10 +168,16 @@ declare module '@tanstack/react-router' {
 
 interface protectedRouteRouteChildren {
   protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
+  protectedSessionsIndexRoute: typeof protectedSessionsIndexRoute
+  protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute
+  protectedUsersIndexRoute: typeof protectedUsersIndexRoute
 }
 
 const protectedRouteRouteChildren: protectedRouteRouteChildren = {
   protectedDashboardIndexRoute: protectedDashboardIndexRoute,
+  protectedSessionsIndexRoute: protectedSessionsIndexRoute,
+  protectedSettingsIndexRoute: protectedSettingsIndexRoute,
+  protectedUsersIndexRoute: protectedUsersIndexRoute,
 }
 
 const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(
