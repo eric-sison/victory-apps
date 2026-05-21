@@ -1,4 +1,4 @@
-import { CredentialsSignInForm } from "#/components/features/CredentialsSignInForm"
+import { CredentialsSignInForm } from "#/components/features/auth/CredentialsSignInForm"
 import { requireNoAuth } from "#/lib/auth-fns"
 import { createFileRoute, useSearch } from "@tanstack/react-router"
 import z from "zod"
