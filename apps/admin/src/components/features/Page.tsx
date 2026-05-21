@@ -38,11 +38,11 @@ const Action: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({ className,
 }
 
 const Content: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({ className, ...props }) => {
-  return <div className={cn("h-full pt-5", className)} {...props} />
+  return <div className={cn("h-full", className)} {...props} />
 }
 
 const Page: FunctionComponent<PageProps> & PageSubComponents = ({ className, ...props }) => {
-  return <div className={cn("h-full overflow-y-hidden p-5", className)} {...props} />
+  return <div className={cn("h-full space-y-5 overflow-y-hidden p-5", className)} {...props} />
 }
 
 Page.Header = Header
