@@ -45,7 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="h-full overflow-x-hidden">
-        {children}
+        <>{children}</>
         <Toaster />
         <TanStackDevtools
           eventBusConfig={{ debug: false }}
