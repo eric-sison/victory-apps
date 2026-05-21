@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState, type FunctionComponent } from "react"
+import { Fragment, type FunctionComponent } from "react"
 import {
   Sidebar,
   SidebarContent,
@@ -34,22 +34,15 @@ type AppSidebarProps = {
 }
 
 export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
-  const [mounted, setMounted] = useState(false)
-
   const { open } = useSidebar()
   const { pathname } = useLocation()
+
   const navigate = useNavigate()
 
   const setActiveItem = (path: string | undefined) => {
     if (!path) return false
     return pathname === path || pathname.startsWith(path + "/")
   }
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) return null
 
   return (
     <Sidebar collapsible="icon" variant="inset">

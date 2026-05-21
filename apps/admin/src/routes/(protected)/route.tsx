@@ -1,5 +1,5 @@
-import { AppNavBar } from "#/components/features/AppNavbar"
-import { AppSidebar } from "#/components/features/AppSidebar"
+import { AppNavBar } from "#/components/AppNavbar"
+import { AppSidebar } from "#/components/AppSidebar"
 import { requireAuth } from "#/lib/auth-fns"
 import { createFileRoute, Outlet } from "@tanstack/react-router"
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/Sidebar"

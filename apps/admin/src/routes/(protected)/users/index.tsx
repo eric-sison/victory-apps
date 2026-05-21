@@ -1,8 +1,7 @@
-import { Page } from "#/components/features/Page"
+import { Page } from "#/components/Page"
 import { createFileRoute } from "@tanstack/react-router"
 import { Button } from "@workspace/ui/components/Button"
 import { Plus, TrendingDown, TrendingUp } from "lucide-react"
-
 import { Badge } from "@workspace/ui/components/Badge"
 import {
   Card,
@@ -12,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/Card"
+import { DataTable } from "#/components/DataTable"
 
 export const Route = createFileRoute("/(protected)/users/")({
   component: RouteComponent,
@@ -31,7 +31,7 @@ function RouteComponent() {
         </Page.Action>
       </Page.Header>
 
-      <Page.Content>
+      <Page.Content className="space-y-5">
         <div className="grid grid-cols-4 gap-4 *:data-[slot=card]:bg-linear-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4 dark:*:data-[slot=card]:bg-card">
           <Card className="@container/card">
             <CardHeader>
@@ -114,6 +114,7 @@ function RouteComponent() {
             </CardFooter>
           </Card>
         </div>
+        <DataTable columns={[]} data={[]} />
       </Page.Content>
     </Page>
   )
