@@ -45,7 +45,7 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
       },
       {
         title: "Users",
-        path: "/",
+        path: "/users",
         icon: Users,
       },
       {
@@ -55,7 +55,7 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
       },
       {
         title: "Sessions",
-        path: "/",
+        path: "/sessions",
         icon: KeyRound,
       },
       {
@@ -65,7 +65,7 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
       },
       {
         title: "Settings",
-        path: "/",
+        path: "/settings",
         icon: Settings,
       },
       {

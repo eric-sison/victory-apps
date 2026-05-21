@@ -6,6 +6,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -33,8 +34,9 @@ type AppSidebarProps = {
 }
 
 export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
-  const { open } = useSidebar()
   const [mounted, setMounted] = useState(false)
+
+  const { open } = useSidebar()
   const { pathname } = useLocation()
   const navigate = useNavigate()
 
@@ -51,6 +53,33 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
 
   return (
     <Sidebar collapsible="icon" variant="inset">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem className="flex items-center gap-2">
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              onClick={() => navigate({ to: "/dashboard" })}
+            >
+              <div className="flex aspect-square size-8 items-center justify-center text-sidebar-primary-foreground">
+                <img
+                  src="/victory-logo.png"
+                  alt="v-logo"
+                  loading="lazy"
+                  decoding="async"
+                  width={800}
+                  height={600}
+                  className="size-8 shrink-0"
+                />
+              </div>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">Victory</span>
+                <span className="truncate text-xs font-medium text-muted-foreground">Admin App</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
       <SidebarContent>
         {sidebarItems(user.id).map((sidebarItem, index) => (
           <SidebarGroup key={index}>

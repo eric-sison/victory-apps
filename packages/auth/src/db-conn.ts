@@ -1,8 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres"
 import { Pool } from "pg"
 
-console.log("[auth] DATABASE_URL at init:", process.env.DATABASE_URL ? "✓ present" : "✗ undefined")
-
 function createPool() {
   if (!process.env.DATABASE_URL) {
     throw new Error("[auth] DATABASE_URL is not set — check env loading order")

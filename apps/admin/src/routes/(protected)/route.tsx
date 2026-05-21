@@ -22,7 +22,7 @@ function RouteComponent() {
       <AppSidebar user={user} />
       <SidebarInset>
         <AppNavBar user={user} />
-        <main className="flex-1 overflow-y-auto p-5">
+        <main className="flex-1">
           <Outlet />
         </main>
       </SidebarInset>
