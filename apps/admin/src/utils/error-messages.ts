@@ -11,6 +11,7 @@ export const ErrorMessages = {
       full: "Your session has expired or you're not signed in. Please log in and try again.",
       short: "Please log in to continue.",
     },
+
     INVALID_CREDENTIALS: {
       full: "The email or password you entered is incorrect. Please try again.",
       short: "The email or password you entered is incorrect.",
