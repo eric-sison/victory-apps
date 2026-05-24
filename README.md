@@ -76,23 +76,13 @@ cp packages/auth/.env.example packages/auth/.env
 ```
 
 ```dotenv
-# Database
-DATABASE_URL=postgresql://appuser:your_password@localhost:5432/appdb
-
-# Better Auth — must match apps/api exactly
-BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-BETTER_AUTH_URL=http://localhost:3001/api/auth
+# Database connection
+DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
 
 # Default admin user — used by the seed:admin script
-DEFAULT_ADMIN_EMAIL=admin@example.com
+DEFAULT_ADMIN_EMAIL=admin@yourdomain.com
 DEFAULT_ADMIN_PASSWORD=your_secure_admin_password
-DEFAULT_ADMIN_NAME=Admin
-```
-
-Generate a secret with:
-
-```bash
-openssl rand -base64 32
+DEFAULT_ADMIN_NAME=Super Admin
 ```
 
 ### 6. Run Auth Migrations and Seed the Admin User
@@ -112,22 +102,15 @@ cp apps/api/.env.example apps/api/.env
 ```
 
 ```dotenv
-# App
-NODE_ENV=development
-PORT=3001
+# CORS — comma-separated list of allowed origins
+ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:3000
+
+# Better Auth
+BETTER_AUTH_URL=http://localhost:3001/api/auth
+BETTER_AUTH_SECRET=your_secret_here_min_32_characters
 
 # Database
-DATABASE_URL=postgresql://appuser:your_password@localhost:5432/appdb
-
-# Better Auth — BETTER_AUTH_SECRET must match packages/auth/.env exactly
-BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-BETTER_AUTH_URL=http://localhost:3001/api/auth
-
-# CORS — comma-separated list of allowed origins
-ALLOWED_ORIGINS=http://localhost:3000
-
-# Frontend — used to construct links in emails (password reset, etc.)
-RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/reset-password
+DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
 
 # SMTP — in dev this points to Mailpit (docker compose up)
 # In production, replace with your real SMTP provider credentials
@@ -137,28 +120,50 @@ SMTP_SECURE=false
 SMTP_USER=dev
 SMTP_PASSWORD=dev
 SMTP_FROM=noreply@example.com
+
+# Frontend — used to construct links in emails (password reset, etc.)
+RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/callback/reset-password
 ```
 
-> `BETTER_AUTH_SECRET` must be identical to the value in `packages/auth/.env`. A mismatch will cause all session validation to fail.
+Generate a secret with:
+
+```bash
+openssl rand -base64 32
+```
+
+> `BETTER_AUTH_SECRET` must be identical to the value in `apps/admin/.env`. A mismatch will cause all session validation to fail.
 
 > `SMTP_*` variables work for both dev (Mailpit) and production (any real SMTP provider) without any code changes — just update the values.
 
-### 8. Configure Environment Variables for `apps/web`
+> `RESET_PASSWORD_CALLBACK` must point to the frontend reset password page. Better Auth generates a token and appends it as a `?token=` query parameter to this URL.
+
+### 8. Configure Environment Variables for `apps/admin`
+
+`apps/admin` is the TanStack Start admin dashboard. It connects directly to the API and uses Better Auth for session management.
 
 ```bash
-cp apps/web/.env.example apps/web/.env
+cp apps/admin/.env.example apps/admin/.env
 ```
 
 ```dotenv
-# Points to the Hono API — must include the /api/auth suffix
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3001/api/auth
+# Base URL of the Hono API
+VITE_API_URL=http://localhost:3001
+
+# Database — required for server-side auth helpers
+DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
+
+# Better Auth — must match apps/api exactly
+BETTER_AUTH_URL=http://localhost:3001/api/auth
+BETTER_AUTH_SECRET=your_secret_here_min_32_characters
 ```
 
-> `NEXT_PUBLIC_` variables are baked into the client bundle at build time. Restart the dev server after changing this value.
+> `BETTER_AUTH_SECRET` must be identical to the value in `apps/api/.env`. A mismatch will cause all session validation to fail.
+
+> `VITE_*` variables are inlined into the client bundle at build time by Vite. Restart the dev server after changing any of them.
 
 ### 9. Run the Apps
 
-Run both services from the root:
+Run all services from the root with Turborepo:
 
 ```bash
 pnpm dev
@@ -170,8 +175,8 @@ Or in separate terminals:
 # Terminal 1 — API
 pnpm --filter api dev
 
-# Terminal 2 — Web
-pnpm --filter web dev
+# Terminal 2 — Admin
+pnpm --filter admin dev
 ```
 
 ---
@@ -180,7 +185,7 @@ pnpm --filter web dev
 
 | Service         | URL                            |
 | --------------- | ------------------------------ |
-| Web app         | http://localhost:3000          |
+| Admin app       | http://localhost:3000          |
 | API             | http://localhost:3001          |
 | API docs        | http://localhost:3001/api/docs |
 | pgAdmin         | http://localhost:5050          |
@@ -214,8 +219,6 @@ PGADMIN_DEFAULT_PASSWORD=use_a_strong_password
 # BETTER_AUTH_SECRET must be at least 32 characters — generate with: openssl rand -base64 32
 BETTER_AUTH_SECRET=your_secret_here_min_32_characters
 BETTER_AUTH_URL=http://localhost:3001/api/auth
-
-# Web (baked into the Next.js client bundle at build time)
 NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3001/api/auth
 
 # CORS — comma-separated list of origins allowed to call the API
@@ -227,7 +230,7 @@ DEFAULT_ADMIN_PASSWORD=use_a_strong_password
 DEFAULT_ADMIN_NAME=Super Admin
 
 # Frontend — used to construct links in emails (password reset, etc.)
-RESET_PASSWORD_CALLBACK=https://yourdomain.com/auth/reset-password
+RESET_PASSWORD_CALLBACK=https://yourdomain.com/auth/callback/reset-password
 
 # SMTP — replace with your real provider credentials in production
 SMTP_HOST=smtp.yourmailprovider.com
@@ -239,8 +242,6 @@ SMTP_FROM=noreply@yourdomain.com
 ```
 
 > `BETTER_AUTH_SECRET` must be identical across all services. A mismatch will cause all session validation to fail.
-
-> `NEXT_PUBLIC_BETTER_AUTH_URL` is baked into the Next.js bundle at build time. If you change it after building, you must rebuild the web image.
 
 ### 2. Run the Deploy Script
 
@@ -275,7 +276,7 @@ The deploy script handles everything in order: building images, starting infrast
 The database container may not be ready yet. Wait a few seconds and retry, or check `docker compose ps` to confirm it is running.
 
 **`BETTER_AUTH_SECRET` mismatch**
-All auth errors after setup are likely caused by a mismatched `BETTER_AUTH_SECRET`. In local dev, ensure `packages/auth/.env` and `apps/api/.env` have the same value. In Docker, everything reads from `docker/.env` so a mismatch there will break all session validation.
+All auth errors after setup are likely caused by a mismatched `BETTER_AUTH_SECRET`. In local dev, ensure `apps/api/.env` and `apps/admin/.env` have the same value. In Docker, everything reads from `docker/.env` so a mismatch there will break all session validation.
 
 **Port already in use**
 If port `3001` or `3000` is already occupied, update the `PORT` variable in the relevant `.env` file and restart the app.
@@ -287,7 +288,10 @@ Use the credentials defined under `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_P
 Make sure the Mailpit container is running (`docker compose ps`). All dev emails are captured at http://localhost:8025 — nothing is delivered to real inboxes. If the API starts before Mailpit is ready, restart the API.
 
 **Password reset link goes to an error page**
-Ensure `RESET_PASSWORD_CALLBACK` in `apps/api/.env` points to your frontend reset page (e.g. `http://localhost:3000/auth/reset-password`). The value must be a full URL including protocol.
+Ensure `RESET_PASSWORD_CALLBACK` in `apps/api/.env` points to your frontend reset page (e.g. `http://localhost:3000/auth/callback/reset-password`). The value must be a full URL including protocol.
 
 **Volume removal fails during cleanup**
 If `deploy:down:volumes` errors with "volume is in use", run `deploy:down` first to ensure all containers are fully stopped and removed before retrying.
+
+**Admin app environment variables not picked up**
+`VITE_*` variables are baked into the bundle at build time. After editing `apps/admin/.env`, you must restart the Vite dev server for the changes to take effect.
