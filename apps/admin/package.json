@@ -6,7 +6,6 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "predev": "pnpm --filter auth build",
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
@@ -23,7 +22,7 @@
     "@tanstack/react-router-ssr-query": "latest",
     "@tanstack/react-start": "latest",
     "@tanstack/react-table": "^8.21.3",
-    "@tanstack/router-plugin": "^1.132.0",
+    "@tanstack/router-plugin": "latest",
     "@workspace/auth": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "^1.6.11",
@@ -53,7 +52,7 @@
     "babel-plugin-react-compiler": "^1.0.0",
     "jsdom": "^28.1.0",
     "typescript": "^6.0.2",
-    "vite": "^8.0.0",
+    "vite": "^8.0.13",
     "vitest": "^4.1.5"
   }
 }

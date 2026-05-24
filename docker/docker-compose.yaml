@@ -58,13 +58,8 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: "True"
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
       PGADMIN_CONFIG_LOGIN_BANNER: '"Authorized users only."'
-      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - ../pg-admin.json:/pgadmin4/servers.json:ro
     networks:
-      - internal # talks to postgres
-      - public # required for host port 5050 to be published
+      - public
     ports:
       - "127.0.0.1:5050:80"
     security_opt:
@@ -72,11 +67,11 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"
 
   # ---------------------------------------------------------------------------
-  # Migrator — runs once: db:migrate + seed:admin, then exits
+  # Migrator — runs db:migrate + seed:admin, then exits
   # ---------------------------------------------------------------------------
   migrator:
     build:
@@ -84,29 +79,33 @@ services:
       dockerfile: docker/Dockerfile
       target: migrator
     container_name: victory-migrator
-    restart: on-failure
+    restart: "no"
     depends_on:
       postgres:
         condition: service_healthy
-    env_file:
-      - .env
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
-      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
       DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
       DEFAULT_ADMIN_NAME: ${DEFAULT_ADMIN_NAME}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
     networks:
       - internal
+    security_opt:
+      - no-new-privileges:true
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "5m"
+        max-file: "2"
 
   # ---------------------------------------------------------------------------
-  # Hono API
+  # API
   # ---------------------------------------------------------------------------
   api:
     build:
@@ -156,16 +155,18 @@ services:
         max-file: "3"
 
   # ---------------------------------------------------------------------------
-  # Next.js Web
+  # Admin — TanStack Start (Nitro) SSR app
   # ---------------------------------------------------------------------------
-  web:
+  admin:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: web
+      target: admin
       args:
-        NEXT_PUBLIC_BETTER_AUTH_URL: ${NEXT_PUBLIC_BETTER_AUTH_URL}
-    container_name: victory-web
+        # VITE_API_URL is baked into the client bundle at build time.
+        # All other admin env vars (BETTER_AUTH_*, DATABASE_URL) are runtime.
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: victory-admin
     restart: unless-stopped
     depends_on:
       api:
@@ -175,10 +176,12 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      HOSTNAME: "0.0.0.0"
-      API_BASE_URL: http://victory-api:3001 # SSR override
-      # BETTER_AUTH_URL: http://victory-api:3001/api/auth # SSR override
+      # Server-side runtime vars — use internal container hostname for SSR requests
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      BETTER_AUTH_URL: http://victory-api:3001/api/auth
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
     networks:
+      - internal
       - public
     ports:
       - "127.0.0.1:3000:3000"

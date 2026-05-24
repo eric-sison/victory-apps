@@ -10,11 +10,11 @@ const config = defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
-    tanstackStart(),
-    viteReact(),
-    babel({ presets: [reactCompilerPreset()] }),
+    tanstackStart(), // 1. Run this early so it can inject its virtual modules
+    viteReact(),     // 2. Let React handle the JSX/TSX transformation next
+    babel({ presets: [reactCompilerPreset()] }), // 3. Compile the React code
+    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
   ],
 })
 

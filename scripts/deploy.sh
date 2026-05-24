@@ -76,9 +76,12 @@ fi
 
 success "All preflight checks passed."
 
-# Compose shorthand (always targets our file + project name)
+# Compose shorthand — always targets our file, project name, and env file.
+# --env-file is required: without it Docker Compose reads .env from the repo
+# root (which has no VITE_API_URL), so build args like VITE_API_URL expand to
+# empty and Vite bakes undefined into the client bundle.
 compose() {
-  docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" "$@"
+  docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" --env-file "$ENV_FILE" "$@"
 }
 
 # -----------------------------------------------------------------------------
@@ -86,9 +89,9 @@ compose() {
 # -----------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" == false ]]; then
   header "Step 1/4 — Building images"
-  log "Building api, web, migrator... (this may take a few minutes)"
+  log "Building api, admin, migrator... (this may take a few minutes)"
 
-  DOCKER_BUILDKIT=1 compose build $NO_CACHE api web migrator
+  DOCKER_BUILDKIT=1 compose build $NO_CACHE api admin migrator
 
   success "Images built successfully."
 else
@@ -147,12 +150,12 @@ fi
 success "Migrations and seeding completed."
 
 # -----------------------------------------------------------------------------
-# Step 4 — Start API and Web
+# Step 4 — Start API and Admin
 # -----------------------------------------------------------------------------
-header "Step 4/4 — Starting API and Web"
-log "Starting api and web services..."
+header "Step 4/4 — Starting API and Admin"
+log "Starting api and admin services..."
 
-compose up -d api web
+compose up -d api admin
 
 # Wait for API health check using docker inspect (no wget/jq/sh needed — works with distroless)
 log "Waiting for API to be healthy..."
@@ -172,7 +175,7 @@ done
 header "Deployment complete"
 
 echo ""
-echo -e "  ${GREEN}✓${RESET} Web app   → http://localhost:3000"
+echo -e "  ${GREEN}✓${RESET} Admin app → http://localhost:3000"
 echo -e "  ${GREEN}✓${RESET} API       → http://localhost:3001"
 echo -e "  ${GREEN}✓${RESET} API docs  → http://localhost:3001/api/docs"
 echo -e "  ${GREEN}✓${RESET} pgAdmin   → http://localhost:5050"

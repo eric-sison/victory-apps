@@ -38,9 +38,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const envScript = `window.__ENV__=${JSON.stringify({ VITE_API_URL: process.env.VITE_API_URL ?? "" })}`
+
   return (
     <html lang="en" className="h-svh antialiased" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: envScript }} />
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -49,18 +52,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Toaster />
         <TanStackDevtools
           eventBusConfig={{ debug: false }}
-          config={{
-            position: "bottom-right",
-          }}
+          config={{ position: "bottom-right" }}
           plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            {
-              name: "Tanstack Query",
-              render: <ReactQueryDevtoolsPanel />,
-            },
+            { name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> },
+            { name: "Tanstack Query", render: <ReactQueryDevtoolsPanel /> },
             formDevtoolsPlugin(),
           ]}
         />
