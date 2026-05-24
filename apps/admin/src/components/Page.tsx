@@ -38,7 +38,7 @@ const Action: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({ className,
 }
 
 const Content: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({ className, ...props }) => {
-  return <div className={cn("h-full", className)} {...props} />
+  return <div className={cn("h-full space-y-5", className)} {...props} />
 }
 
 const Page: FunctionComponent<PageProps> & PageSubComponents = ({ className, ...props }) => {
