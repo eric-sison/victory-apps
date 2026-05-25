@@ -67,7 +67,7 @@ function Slider({
             className={cn(
               "block border-2 cursor-pointer size-4 shrink-0 rounded-full bg-white shadow-sm ring-ring/50 transition-[color,box-shadow,opacity] duration-500 select-none hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50",
               variant === "primary"
-                ? "border-primary"
+                ? "border-none"
                 : "border-foreground bg-background",
               hideThumb && "opacity-0 group-hover:opacity-100",
             )}

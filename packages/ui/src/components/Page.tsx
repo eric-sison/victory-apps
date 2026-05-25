@@ -16,7 +16,10 @@ const Header: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({
 }) => {
   return (
     <div
-      className={cn("grid grid-cols-[1fr_auto] items-start gap-x-4", className)}
+      className={cn(
+        "grid grid-cols-[1fr_auto] items-start gap-x-4 border-b p-4",
+        className,
+      )}
       {...props}
     />
   );
@@ -65,29 +68,26 @@ const Content: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({
   className,
   ...props
 }) => {
-  return <div className={cn("h-full space-y-5", className)} {...props} />;
+  return (
+    <div
+      className={cn("space-y-5 flex-1 overflow-y-auto p-4", className)}
+      {...props}
+    />
+  );
 };
 
 const Footer: FunctionComponent<ComponentPropsWithoutRef<"div">> = ({
   className,
   ...props
 }) => {
-  return (
-    <div
-      className={cn("absolute bottom-0 border-t p-4 w-full right-0")}
-      {...props}
-    />
-  );
+  return <div className={cn("p-4 w-full shrink-0", className)} {...props} />;
 };
 
 const Page: FunctionComponent<ComponentPropsWithoutRef<"div">> &
   PageSubComponents = ({ className, ...props }) => {
   return (
     <div
-      className={cn(
-        "h-full space-y-5 overflow-y-hidden p-5 relative",
-        className,
-      )}
+      className={cn("h-full flex flex-col overflow-hidden", className)}
       {...props}
     />
   );

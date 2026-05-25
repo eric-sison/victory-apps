@@ -1,14 +1,24 @@
 import { Button } from "@workspace/ui/components/Button";
 import { Slider } from "@workspace/ui/components/Slider";
-import { Play, Repeat, Shuffle, SkipBack, SkipForward } from "lucide-react";
+import {
+  ListMusic,
+  Maximize,
+  Mic,
+  Play,
+  Repeat,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+  Volume2,
+} from "lucide-react";
 import type { FunctionComponent } from "react";
 
 export const MusicPlayer: FunctionComponent = () => {
   return (
-    <div className="absolute bottom-0 border-t w-full z-20 bg-background">
+    <div className="w-full z-20 bg-background">
       <Slider roundedSides={false} variant="foreground" hideThumb />
       <div className="flex items-center justify-between p-4">
-        <section>
+        <section className="w-sm">
           <div className="flex items-center gap-2">
             <img
               src="https://i.scdn.co/image/ab67616d0000b273656001849b39dfee31b8d855"
@@ -27,7 +37,7 @@ export const MusicPlayer: FunctionComponent = () => {
           </div>
         </section>
 
-        <section className="flex items-center gap-5">
+        <section className="flex items-center gap-5 w-sm justify-center">
           <Button variant="ghost" size="icon-lg">
             <Repeat className="size-5" />
           </Button>
@@ -49,7 +59,23 @@ export const MusicPlayer: FunctionComponent = () => {
           </Button>
         </section>
 
-        <section>1</section>
+        <section className="w-sm flex items-center justify-end">
+          <Button variant="ghost">
+            <Volume2 />
+          </Button>
+
+          <Button variant="ghost">
+            <Mic />
+          </Button>
+
+          <Button variant="ghost">
+            <ListMusic />
+          </Button>
+
+          <Button variant="ghost">
+            <Maximize />
+          </Button>
+        </section>
       </div>
     </div>
   );

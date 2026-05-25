@@ -4,7 +4,6 @@ import {
   SidebarProvider,
 } from "@workspace/ui/components/Sidebar";
 import { AppSidebar } from "#/components/AppSidebar";
-import { MusicPlayer } from "#/components/MusicPlayer";
 
 export const Route = createFileRoute("/(protected)")({
   component: RouteComponent,
@@ -12,14 +11,15 @@ export const Route = createFileRoute("/(protected)")({
 
 function RouteComponent() {
   return (
-    <SidebarProvider className="">
-      <AppSidebar />
-      <SidebarInset>
-        <main className="flex-1">
-          <Outlet />
-        </main>
-      </SidebarInset>
-      <MusicPlayer />
-    </SidebarProvider>
+    <div className="flex flex-col h-full overflow-y-hidden">
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }
