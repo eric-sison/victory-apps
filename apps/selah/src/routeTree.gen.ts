@@ -9,38 +9,129 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as protectedRouteRouteImport } from './routes/(protected)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as protectedTeamsIndexRouteImport } from './routes/(protected)/teams/index'
+import { Route as protectedSongBankIndexRouteImport } from './routes/(protected)/song-bank/index'
+import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
+import { Route as protectedServicesIndexRouteImport } from './routes/(protected)/services/index'
+import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
+import { Route as protectedCalendarIndexRouteImport } from './routes/(protected)/calendar/index'
 
+const protectedRouteRoute = protectedRouteRouteImport.update({
+  id: '/(protected)',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const protectedTeamsIndexRoute = protectedTeamsIndexRouteImport.update({
+  id: '/teams/',
+  path: '/teams/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedSongBankIndexRoute = protectedSongBankIndexRouteImport.update({
+  id: '/song-bank/',
+  path: '/song-bank/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedSettingsIndexRoute = protectedSettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedServicesIndexRoute = protectedServicesIndexRouteImport.update({
+  id: '/services/',
+  path: '/services/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
+const protectedCalendarIndexRoute = protectedCalendarIndexRouteImport.update({
+  id: '/calendar/',
+  path: '/calendar/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/calendar/': typeof protectedCalendarIndexRoute
+  '/dashboard/': typeof protectedDashboardIndexRoute
+  '/services/': typeof protectedServicesIndexRoute
+  '/settings/': typeof protectedSettingsIndexRoute
+  '/song-bank/': typeof protectedSongBankIndexRoute
+  '/teams/': typeof protectedTeamsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/calendar': typeof protectedCalendarIndexRoute
+  '/dashboard': typeof protectedDashboardIndexRoute
+  '/services': typeof protectedServicesIndexRoute
+  '/settings': typeof protectedSettingsIndexRoute
+  '/song-bank': typeof protectedSongBankIndexRoute
+  '/teams': typeof protectedTeamsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(protected)': typeof protectedRouteRouteWithChildren
+  '/(protected)/calendar/': typeof protectedCalendarIndexRoute
+  '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
+  '/(protected)/services/': typeof protectedServicesIndexRoute
+  '/(protected)/settings/': typeof protectedSettingsIndexRoute
+  '/(protected)/song-bank/': typeof protectedSongBankIndexRoute
+  '/(protected)/teams/': typeof protectedTeamsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/calendar/'
+    | '/dashboard/'
+    | '/services/'
+    | '/settings/'
+    | '/song-bank/'
+    | '/teams/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/calendar'
+    | '/dashboard'
+    | '/services'
+    | '/settings'
+    | '/song-bank'
+    | '/teams'
+  id:
+    | '__root__'
+    | '/'
+    | '/(protected)'
+    | '/(protected)/calendar/'
+    | '/(protected)/dashboard/'
+    | '/(protected)/services/'
+    | '/(protected)/settings/'
+    | '/(protected)/song-bank/'
+    | '/(protected)/teams/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  protectedRouteRoute: typeof protectedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/(protected)': {
+      id: '/(protected)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof protectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +139,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(protected)/teams/': {
+      id: '/(protected)/teams/'
+      path: '/teams'
+      fullPath: '/teams/'
+      preLoaderRoute: typeof protectedTeamsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/song-bank/': {
+      id: '/(protected)/song-bank/'
+      path: '/song-bank'
+      fullPath: '/song-bank/'
+      preLoaderRoute: typeof protectedSongBankIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/settings/': {
+      id: '/(protected)/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof protectedSettingsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/services/': {
+      id: '/(protected)/services/'
+      path: '/services'
+      fullPath: '/services/'
+      preLoaderRoute: typeof protectedServicesIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/dashboard/': {
+      id: '/(protected)/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof protectedDashboardIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/calendar/': {
+      id: '/(protected)/calendar/'
+      path: '/calendar'
+      fullPath: '/calendar/'
+      preLoaderRoute: typeof protectedCalendarIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
   }
 }
 
+interface protectedRouteRouteChildren {
+  protectedCalendarIndexRoute: typeof protectedCalendarIndexRoute
+  protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
+  protectedServicesIndexRoute: typeof protectedServicesIndexRoute
+  protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute
+  protectedSongBankIndexRoute: typeof protectedSongBankIndexRoute
+  protectedTeamsIndexRoute: typeof protectedTeamsIndexRoute
+}
+
+const protectedRouteRouteChildren: protectedRouteRouteChildren = {
+  protectedCalendarIndexRoute: protectedCalendarIndexRoute,
+  protectedDashboardIndexRoute: protectedDashboardIndexRoute,
+  protectedServicesIndexRoute: protectedServicesIndexRoute,
+  protectedSettingsIndexRoute: protectedSettingsIndexRoute,
+  protectedSongBankIndexRoute: protectedSongBankIndexRoute,
+  protectedTeamsIndexRoute: protectedTeamsIndexRoute,
+}
+
+const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(
+  protectedRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  protectedRouteRoute: protectedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

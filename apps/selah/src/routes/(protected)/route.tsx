@@ -3,32 +3,23 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@workspace/ui/components/Sidebar";
-import { AppNavBar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
-import { requireAuth } from "#/lib/auth-fns";
+import { MusicPlayer } from "#/components/MusicPlayer";
 
 export const Route = createFileRoute("/(protected)")({
-  beforeLoad: async ({ location }) =>
-    await requireAuth({
-      data: {
-        redirectTo: location.href,
-      },
-    }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext();
-
   return (
-    <SidebarProvider>
-      <AppSidebar user={user} />
+    <SidebarProvider className="">
+      <AppSidebar />
       <SidebarInset>
-        <AppNavBar user={user} />
         <main className="flex-1">
           <Outlet />
         </main>
       </SidebarInset>
+      <MusicPlayer />
     </SidebarProvider>
   );
 }

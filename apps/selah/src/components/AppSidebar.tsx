@@ -1,5 +1,4 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import type { auth } from "@workspace/auth/server";
 import {
   Collapsible,
   CollapsibleContent,
@@ -29,18 +28,20 @@ import {
   SidebarRail,
   useSidebar,
 } from "@workspace/ui/components/Sidebar";
-import { ChevronRight } from "lucide-react";
-import { Fragment, type FunctionComponent } from "react";
+import { AudioLines, ChevronRight } from "lucide-react";
+import {
+  type ComponentPropsWithoutRef,
+  Fragment,
+  type FunctionComponent,
+} from "react";
 import {
   SIDEBAR_FOOTER_ITEMS,
   SIDEBAR_CONTENT_ITEMS as sidebarItems,
 } from "#/utils/sidebar-items";
 
-type AppSidebarProps = {
-  user: typeof auth.$Infer.Session.user;
-};
-
-export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
+export const AppSidebar: FunctionComponent<
+  ComponentPropsWithoutRef<typeof Sidebar>
+> = (props) => {
   const { open } = useSidebar();
   const { pathname } = useLocation();
 
@@ -52,38 +53,28 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
   };
 
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-              onClick={() => navigate({ to: "/dashboard" })}
+              onClick={() => navigate({ to: "/" })}
             >
-              <div className="flex aspect-square size-8 items-center justify-center text-sidebar-primary-foreground">
-                <img
-                  src="/victory-logo.png"
-                  alt="v-logo"
-                  loading="lazy"
-                  decoding="async"
-                  width={800}
-                  height={600}
-                  className="size-8 shrink-0"
-                />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-sidebar-primary-foreground">
+                <AudioLines className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Victory</span>
-                <span className="truncate text-xs font-medium text-muted-foreground">
-                  Admin App
-                </span>
+                <span className="truncate font-medium">Selah</span>
+                <span className="truncate text-xs">Song Library</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {sidebarItems(user.id).map((sidebarItem) => (
+        {sidebarItems().map((sidebarItem) => (
           <SidebarGroup key={sidebarItem.groupId}>
             {sidebarItem.group && (
               <SidebarGroupLabel className="text-[10px] font-bold tracking-wider uppercase">
@@ -94,7 +85,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
               <SidebarMenu>
                 {sidebarItem.items.map((item) => {
                   // Render sub items in collapsible
-                  if (item.subItems && open) {
+                  if (item.subItems.length > 0 && open) {
                     return (
                       <Collapsible
                         key={item.id}
