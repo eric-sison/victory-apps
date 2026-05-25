@@ -4,6 +4,7 @@ packages:
 
 # 1. New home for onlyBuiltDependencies
 allowBuilds:
+  core-js: false
   esbuild: true
   lightningcss: true
   msw: true
@@ -43,6 +44,5 @@ supportedArchitectures:
     - x64
 
 minimumReleaseAgeExclude:
-  - '@tanstack/react-start-rsc@0.1.12'
-  - '@tanstack/react-start@1.168.12'
-  - '@tanstack/start-plugin-core@1.171.5'
+  - "@tanstack/react-start-rsc@0.1.12"
+  - "@tanstack/start-plugin-core@1.171.5"

@@ -1,15 +1,15 @@
-export type UserRole = "admin" | "editor" | "viewer" | "billing"
-export type UserStatus = "active" | "inactive" | "pending" | "suspended"
+export type UserRole = "admin" | "editor" | "viewer" | "billing";
+export type UserStatus = "active" | "inactive" | "pending" | "suspended";
 
 export type User = {
-  id: string
-  name: string
-  email: string
-  role: UserRole
-  status: UserStatus
-  joinedAt: string
-  lastSeen: string
-}
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: UserStatus;
+  joinedAt: string;
+  lastSeen: string;
+};
 
 export const mockUsers: User[] = [
   {
@@ -462,4 +462,4 @@ export const mockUsers: User[] = [
     joinedAt: "2024-11-21",
     lastSeen: "2026-05-10",
   },
-]
+];

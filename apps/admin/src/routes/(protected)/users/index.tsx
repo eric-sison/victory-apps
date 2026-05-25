@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router"
-import { Page } from "#/components/Page"
-import { Button } from "@workspace/ui/components/Button"
-import { Plus } from "lucide-react"
+import { createFileRoute } from "@tanstack/react-router";
+import { Page } from "#/components/Page";
+import { Button } from "@workspace/ui/components/Button";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/(protected)/users/")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
   return (
@@ -23,5 +23,5 @@ function RouteComponent() {
 
       <Page.Content></Page.Content>
     </Page>
-  )
+  );
 }

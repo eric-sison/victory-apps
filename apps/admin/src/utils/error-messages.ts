@@ -80,4 +80,4 @@ export const ErrorMessages = {
       short: "The request timed out. Please try again.",
     },
   },
-} as const
+} as const;
