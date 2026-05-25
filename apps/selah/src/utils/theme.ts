@@ -10,14 +10,14 @@ const script = `(function () {
             : "light";
     root.classList.add(theme);
     root.style.colorScheme = theme;
-    })();`
+    })();`;
 
 function minify(input: string): string {
   return input
     .replace(/\n/g, " ") // remove newlines
     .replace(/\t/g, " ") // remove tabs
     .replace(/\s+/g, " ") // collapse whitespace
-    .trim()
+    .trim();
 }
 
-export const themeScript = minify(script)
+export const themeScript = minify(script);
