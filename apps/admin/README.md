@@ -1,218 +1,139 @@
-Welcome to your new TanStack Start app! 
+# admin
 
-# Getting Started
+The SSR admin dashboard for **victory-apps**, built with TanStack Start and served via Nitro. Provides a protected interface for managing users, sessions, and settings, backed by the Hono API (`apps/api`).
 
-To run this application:
+---
+
+## Tech Stack
+
+| Layer          | Library / Tool                                      |
+| -------------- | --------------------------------------------------- |
+| Framework      | TanStack Start (SSR) + TanStack Router (file-based) |
+| Runtime        | React 19, Vite 8, Nitro (server adapter)            |
+| Styling        | Tailwind CSS v4                                     |
+| UI Components  | `@workspace/ui` (shadcn/ui-based component library) |
+| Auth           | Better Auth via `@workspace/auth`                   |
+| Data Fetching  | TanStack Query v5                                   |
+| Forms          | TanStack Form                                       |
+| Tables         | TanStack Table                                      |
+| State          | Zustand                                             |
+| Icons          | Lucide React                                        |
+| Lint / Format  | Biome                                               |
+| Tests          | Vitest + Testing Library                            |
+| Compiler       | React Compiler (via Babel plugin)                   |
+
+---
+
+## Prerequisites
+
+Before running the admin app, make sure the following are in place:
+
+- PostgreSQL is running with migrations applied (see root README)
+- The API (`apps/api`) is running on port `3001`
+- A `.env` file exists at `apps/admin/.env`
+
+---
+
+## Environment Variables
 
 ```bash
-pnpm install
-pnpm dev
+cp apps/admin/.env.example apps/admin/.env
 ```
 
-# Building For Production
+```dotenv
+# Base URL of the Hono API — baked into the client bundle at build time by Vite
+VITE_API_URL=http://localhost:3001
 
-To build this application for production:
+# Database — required for server-side auth session helpers
+DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
+
+# Better Auth — must match apps/api exactly
+BETTER_AUTH_URL=http://localhost:3001/api/auth
+BETTER_AUTH_SECRET=your_secret_here_min_32_characters
+```
+
+> `VITE_*` variables are inlined into the client bundle at **build time**. Restart the Vite dev server after any change.
+
+> `BETTER_AUTH_SECRET` must be identical to the value in `apps/api/.env`. A mismatch will break all session validation.
+
+---
+
+## Scripts
+
+| Script          | Description                                            |
+| --------------- | ------------------------------------------------------ |
+| `pnpm dev`      | Start the dev server on port `3000` (hot reload)       |
+| `pnpm build`    | Build for production — outputs to `.output/`           |
+| `pnpm preview`  | Build then serve the production output locally         |
+| `pnpm test`     | Run the Vitest test suite                              |
+| `pnpm lint`     | Lint with Biome                                        |
+| `pnpm format`   | Format with Biome                                      |
+| `pnpm check`    | Lint + format check with Biome                         |
+
+---
+
+## Build Output
+
+Vite + Nitro outputs to `.output/` (not `dist/`). The production entry point is:
+
+```
+.output/server/index.mjs
+```
+
+The build is a self-contained Nitro server that can run on any Node-compatible host:
 
 ```bash
 pnpm build
+node .output/server/index.mjs
 ```
 
-## Testing
+In Docker, the distroless runner copies `.output/` and starts the server directly:
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
-```bash
-pnpm test
+```dockerfile
+CMD ["output/server/index.mjs"]
 ```
 
-## Styling
+---
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+## Workspace Dependencies
 
-### Removing Tailwind CSS
+| Package             | What it provides                                                    |
+| ------------------- | ------------------------------------------------------------------- |
+| `@workspace/auth`   | `auth` server instance, `createClientAuth` factory, Drizzle schema  |
+| `@workspace/ui`     | Shared shadcn/ui component library (Button, Card, Sidebar, etc.)    |
 
-If you prefer not to use Tailwind CSS:
+The auth client is instantiated in `src/lib/auth-client.ts` using `createClientAuth` with `VITE_API_URL` and the auth base path.
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `pnpm add @tailwindcss/vite tailwindcss --dev`
+---
 
-## Linting & Formatting
+## Vite Configuration
 
-This project uses [Biome](https://biomejs.dev/) for linting and formatting. The following scripts are available:
+`vite.config.ts` uses the following plugins:
 
+- `@tanstack/devtools-vite` — TanStack devtools overlay (dev only)
+- `nitro/vite` — Nitro server adapter
+- `@tailwindcss/vite` — Tailwind CSS v4 integration
+- `@tanstack/react-start/plugin/vite` — TanStack Start SSR + server functions
+- `@vitejs/plugin-react` — React Fast Refresh
+- `@rolldown/plugin-babel` with `reactCompilerPreset` — React Compiler for automatic memoization
 
-```bash
-pnpm lint
-pnpm format
-pnpm check
-```
+Path aliases are resolved via `tsconfig.json` (`#/*` maps to `./src/*`).
 
+---
 
-## Deploy with Nitro
+## Troubleshooting
 
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
+**Sign-in always fails with a 401**
+Check that `BETTER_AUTH_SECRET` in `apps/admin/.env` matches the value in `apps/api/.env` exactly.
 
-```bash
-npm run build
-node dist/server/index.mjs
-```
+**`VITE_API_URL` is undefined in the browser**
+This variable is baked at build time. If you change it, you must restart `pnpm dev` (or rebuild for production) — a hot reload is not enough.
 
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
+**Redirected to `/auth/sign-in` on every page load**
+The `DATABASE_URL` in `apps/admin/.env` must point to the same database as the API. If it's wrong, the server-side session check fails and `requireAuth` redirects every request.
 
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
+**Route tree is out of sync**
+Delete `src/routeTree.gen.ts` and restart the dev server. TanStack Router regenerates it automatically from the files in `src/routes/`.
 
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+**Build fails with a `lightningcss` error**
+The Docker build hoists `lightningcss` in `.npmrc`. For local builds this shouldn't happen, but if it does, run `pnpm install` again — it resolves the correct platform binary.
