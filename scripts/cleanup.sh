@@ -4,7 +4,7 @@
 # Usage: ./undeploy.sh [--volumes] [--images] [--all]
 #
 #   --volumes   Also remove named volumes  (postgres_data, pgadmin_data)
-#   --images    Also remove built images   (api, web)
+#   --images    Also remove built images   (api, admin)
 #   --all       Equivalent to --volumes --images
 #
 # Run from the repo root.
@@ -21,7 +21,7 @@ PROJECT_NAME="victory"
 # Image names produced by `compose build`
 IMAGES=(
   "victory-api"
-  "victory-web"
+  "victory-admin"
 )
 
 # Named volumes defined in docker-compose.yaml
@@ -89,92 +89,46 @@ fi
 
 success "All preflight checks passed."
 
-# Compose shorthand
-compose() {
-  docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" "$@"
-}
+# -----------------------------------------------------------------------------
+# Stop and remove containers + networks
+# -----------------------------------------------------------------------------
+header "Stopping containers"
+
+docker compose -f "$COMPOSE_FILE" -p "$PROJECT_NAME" down --remove-orphans
+success "Containers and networks removed."
 
 # -----------------------------------------------------------------------------
-# Step 1 — Stop & remove containers + default networks
+# Volumes (optional)
 # -----------------------------------------------------------------------------
-header "Step 1/3 — Stopping containers"
-
-RUNNING=$(compose ps -qa 2>/dev/null)
-
-if [[ -n "$RUNNING" ]]; then
-  log "Bringing down all containers (including exited)..."
-  compose down --remove-orphans
-  success "Containers stopped and removed."
-else
-  log "No containers found for project '${PROJECT_NAME}'. Ensuring clean state..."
-  compose down --remove-orphans 2>/dev/null || true
-  success "Done."
-fi
-
-log "Pruning stopped containers..."
-docker container prune -f
-success "Stopped containers pruned."
-
-log "Pruning unused networks..."
-docker network prune -f
-success "Unused networks pruned."
-
-# -----------------------------------------------------------------------------
-# Step 2 — Remove named volumes  (opt-in: --volumes / --all)
-# -----------------------------------------------------------------------------
-header "Step 2/3 — Volumes"
-
 if [[ "$REMOVE_VOLUMES" == true ]]; then
+  header "Removing volumes"
   for vol in "${VOLUMES[@]}"; do
-    if docker volume ls -q | grep -q "^${vol}$"; then
-      log "Removing volume: ${vol}"
+    if docker volume inspect "$vol" &>/dev/null; then
       docker volume rm "$vol"
-      success "Removed volume: ${vol}"
+      success "Removed volume: $vol"
     else
-      warn "Volume not found, skipping: ${vol}"
+      warn "Volume not found, skipping: $vol"
     fi
   done
-else
-  warn "Skipping volume removal (pass --volumes or --all to remove)."
 fi
 
 # -----------------------------------------------------------------------------
-# Step 3 — Remove built images  (opt-in: --images / --all)
+# Images (optional)
 # -----------------------------------------------------------------------------
-header "Step 3/3 — Images"
-
 if [[ "$REMOVE_IMAGES" == true ]]; then
+  header "Removing images"
   for img in "${IMAGES[@]}"; do
-    if docker image ls --format '{{.Repository}}' | grep -q "^${img}$"; then
-      log "Removing image: ${img}"
-      docker image rm "$img"
-      success "Removed image: ${img}"
+    if docker image inspect "$img" &>/dev/null; then
+      docker image rm -f "$img"
+      success "Removed image: $img"
     else
-      warn "Image not found, skipping: ${img}"
+      warn "Image not found, skipping: $img"
     fi
   done
-else
-  warn "Skipping image removal (pass --images or --all to remove)."
 fi
 
 # -----------------------------------------------------------------------------
 # Done
 # -----------------------------------------------------------------------------
-header "Undeploy complete"
-
-echo ""
-if [[ "$REMOVE_VOLUMES" == true ]]; then
-  echo -e "  ${GREEN}✓${RESET} Volumes removed  (data is gone)"
-else
-  echo -e "  ${YELLOW}–${RESET} Volumes kept     (re-run with --volumes to delete data)"
-fi
-
-if [[ "$REMOVE_IMAGES" == true ]]; then
-  echo -e "  ${GREEN}✓${RESET} Images removed   (next deploy will rebuild from scratch)"
-else
-  echo -e "  ${YELLOW}–${RESET} Images kept      (re-run with --images to free disk space)"
-fi
-echo ""
-
-log "To redeploy:            ./deploy.sh"
-log "To nuke everything:     $0 --all"
+header "Done"
+success "All requested resources have been removed."

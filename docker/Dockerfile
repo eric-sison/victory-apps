@@ -24,9 +24,9 @@ FROM base AS pruner-api
 COPY . .
 RUN turbo prune api --docker
 
-FROM base AS pruner-web
+FROM base AS pruner-admin
 COPY . .
-RUN turbo prune web --docker
+RUN turbo prune admin --docker
 
 FROM base AS pruner-migrator
 COPY . .
@@ -41,11 +41,16 @@ COPY --from=pruner-api /app/out/json/ .
 COPY --from=pruner-api /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --no-frozen-lockfile
 
-FROM base AS installer-web
-COPY --from=pruner-web /app/out/json/ .
-# node-linker=hoisted: creates file-level symlinks for lightningcss platform binary.
-# --no-lockfile: forces platform re-resolution absent from a macOS lockfile.
-RUN echo "node-linker=hoisted" >> .npmrc \
+FROM base AS installer-admin
+COPY --from=pruner-admin /app/out/json/ .
+# Hoist only lightningcss (and its platform-specific binary) to the root node_modules/
+# so that @tailwindcss/vite can resolve the native addon via standard Node.js module
+# resolution. Using public-hoist-pattern keeps pnpm's default isolated linker for all
+# other packages — including vite — which correctly exposes per-package binaries via
+# pnpm's own PATH extension when running workspace scripts.
+# --no-lockfile forces fresh platform binary resolution (lockfile was generated on macOS).
+RUN echo 'public-hoist-pattern[]=lightningcss' >> .npmrc \
+  && echo 'public-hoist-pattern[]=lightningcss-*' >> .npmrc \
   && pnpm install --no-lockfile
 
 FROM base AS installer-migrator
@@ -65,13 +70,20 @@ COPY --from=pruner-api /app/out/full/ .
 COPY --from=pruner-api /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm turbo build --filter=api
 
-FROM base AS builder-web
-ARG NEXT_PUBLIC_BETTER_AUTH_URL
-ENV NEXT_PUBLIC_BETTER_AUTH_URL=$NEXT_PUBLIC_BETTER_AUTH_URL
+FROM base AS builder-admin
+# VITE_API_URL is a client-side env var baked into the bundle at build time.
+# BETTER_AUTH_URL / BETTER_AUTH_SECRET / DATABASE_URL are server-side runtime
+# vars and must NOT be baked in — pass them via docker-compose environment: instead.
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+RUN test -n "$VITE_API_URL" || { echo "ERROR: VITE_API_URL build arg is empty"; exit 1; }
 WORKDIR /app
-COPY --from=installer-web /app .
-COPY --from=pruner-web /app/out/full/ .
-RUN pnpm turbo build --filter=web
+COPY --from=installer-admin /app .
+COPY --from=pruner-admin /app/out/full/ .
+# Re-apply the lightningcss hoist pattern in case COPY from pruner overwrote .npmrc.
+RUN echo 'public-hoist-pattern[]=lightningcss' >> .npmrc \
+  && echo 'public-hoist-pattern[]=lightningcss-*' >> .npmrc
+RUN pnpm turbo build --filter=admin
 
 # -----------------------------------------------------------------------------
 # DEPLOYER
@@ -150,21 +162,19 @@ ENV NODE_ENV=production
 ENV PORT=3001
 CMD ["dist/src/index.js"]
 
-### Web — distroless + Next.js standalone
-FROM gcr.io/distroless/nodejs20-debian12 AS web
+### Admin — distroless + Nitro self-contained server bundle
+# TanStack Start (via Nitro) outputs to .output/ by default.
+# The server entry point is .output/server/index.mjs.
+FROM gcr.io/distroless/nodejs20-debian12 AS admin
 
 WORKDIR /app
 
-COPY --from=builder-web /app/apps/web/.next/standalone/apps/web ./
-COPY --from=builder-web /app/apps/web/.next/standalone/node_modules ./node_modules
-COPY --from=builder-web /app/apps/web/.next/static ./.next/static
-COPY --from=builder-web /app/apps/web/public* ./public
+COPY --from=builder-admin /app/apps/admin/.output ./output
 
 EXPOSE 3000
 ENV NODE_ENV=production
-ENV HOSTNAME="0.0.0.0"
 ENV PORT=3000
-CMD ["server.js"]
+CMD ["output/server/index.mjs"]
 
 ### Migrator — slim + pnpm (needs shell + pnpm run for scripts)
 FROM node:20-slim AS migrator

@@ -5,7 +5,6 @@
     "dist"
   ],
   "scripts": {
-    "predev": "pnpm --filter auth build",
     "dev": "tsx scripts/check-db.ts && tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/src/index.js",
