@@ -25,9 +25,6 @@ importers:
       lint-staged:
         specifier: ^17.0.5
         version: 17.0.5
-      prettier:
-        specifier: ^3.8.1
-        version: 3.8.3
       prettier-plugin-tailwindcss:
         specifier: ^0.8.0
         version: 0.8.0(prettier@3.8.3)
