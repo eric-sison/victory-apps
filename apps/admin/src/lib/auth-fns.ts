@@ -17,21 +17,23 @@ export const getSession = createServerFn().handler(async () => {
   }
 });
 
-export const requireNoAuth = createServerFn({ method: "GET" }).handler(async () => {
-  const session = await getSession();
+export const requireNoAuth = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const session = await getSession();
 
-  if (session) {
-    throw redirect({
-      to: "/dashboard",
-    });
-  }
-});
+    if (session) {
+      throw redirect({
+        to: "/dashboard",
+      });
+    }
+  },
+);
 
 export const requireAuth = createServerFn({ method: "GET" })
   .inputValidator(
     z.object({
       redirectTo: z.string().optional(),
-    })
+    }),
   )
   .handler(async ({ data }) => {
     const session = await getSession();
