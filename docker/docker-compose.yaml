@@ -58,7 +58,10 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: "True"
       PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
       PGADMIN_CONFIG_LOGIN_BANNER: '"Authorized users only."'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
     networks:
+      - internal
       - public
     ports:
       - "127.0.0.1:5050:80"
@@ -163,8 +166,8 @@ services:
       dockerfile: docker/Dockerfile
       target: admin
       args:
-        # VITE_API_URL is baked into the client bundle at build time.
-        # All other admin env vars (BETTER_AUTH_*, DATABASE_URL) are runtime.
+        # VITE_API_URL is baked into the client bundle at build time so the
+        # browser knows the public-facing API URL.
         VITE_API_URL: ${VITE_API_URL}
     container_name: victory-admin
     restart: unless-stopped
@@ -176,7 +179,13 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      # Server-side runtime vars — use internal container hostname for SSR requests
+      # VITE_API_URL at runtime is the internal Docker hostname used by the
+      # Nitro SSR server for server-side auth requests. Nitro maps
+      # import.meta.env to process.env at runtime (no static replacement), so
+      # this must be an actual env var — the build arg alone is not enough.
+      # The client bundle is unaffected: it has the public URL baked in above.
+      VITE_API_URL: http://victory-api:3001
+      # Other server-side runtime vars
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       BETTER_AUTH_URL: http://victory-api:3001/api/auth
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}

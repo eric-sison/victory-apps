@@ -100,10 +100,10 @@ updates:
       # Major version — needs a deliberate coordinated migration across the monorepo.
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
-      # Keep @types/node aligned with the node:20-slim Docker runtime.
-      # Jumping to 21+ would mismatch the actual Node.js version in production.
+      # Keep @types/node aligned with the node:22-slim Docker runtime.
+      # Jumping to 23+ would mismatch the actual Node.js version in production.
       - dependency-name: "@types/node"
-        versions: [">=21"]
+        versions: [">=23"]
 
   # ─── packages/auth ────────────────────────────────────────────────────────
   - package-ecosystem: "npm"
