@@ -128,7 +128,7 @@ export const AppSidebar: FunctionComponent<
                   }
 
                   // Render sub-items in a dropdown menu
-                  if (item.subItems && !open) {
+                  if (item.subItems.length > 0 && !open) {
                     return (
                       <DropdownMenu key={item.id}>
                         <SidebarMenuItem>

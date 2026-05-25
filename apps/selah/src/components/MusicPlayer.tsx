@@ -5,8 +5,8 @@ import type { FunctionComponent } from "react";
 
 export const MusicPlayer: FunctionComponent = () => {
   return (
-    <div className="absolute bottom-0 border-t w-full z-20 bg-card">
-      <Slider roundedSides={false} variant="foreground" />
+    <div className="absolute bottom-0 border-t w-full z-20 bg-background">
+      <Slider roundedSides={false} variant="foreground" hideThumb />
       <div className="flex items-center justify-between p-4">
         <section>
           <div className="flex items-center gap-2">
