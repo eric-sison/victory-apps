@@ -1,17 +1,17 @@
 # =============================================================================
 # victory-apps — Production Dockerfile
-# pnpm + Turborepo monorepo (Node >=20, pnpm 9.15.9)
+# pnpm + Turborepo monorepo (Node >=22, pnpm 11.3.0)
 # =============================================================================
 
 # -----------------------------------------------------------------------------
 # BASE — build tooling (Debian slim / glibc)
 # -----------------------------------------------------------------------------
-FROM node:20-slim AS base
+FROM node:22-slim AS base
 
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PATH="$PNPM_HOME/bin:$PATH"
 
-RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
 RUN pnpm add -g turbo@2
 
 WORKDIR /app
@@ -95,7 +95,7 @@ COPY --from=builder-api /app .
 # Strip supportedArchitectures so only the current platform's native binaries
 # are bundled (not darwin + linux + arm64 + x64 variants of everything).
 RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('./package.json','utf8'));if(p.pnpm)delete p.pnpm.supportedArchitectures;fs.writeFileSync('./package.json',JSON.stringify(p,null,2));"
-RUN pnpm deploy --filter=api --prod /deploy/api
+RUN pnpm deploy --filter=api --prod --legacy /deploy/api
 # Remove packages that leaked in as resolved peer deps of better-auth.
 # better-auth lists next/react/@tanstack/react-start as peer deps; pnpm
 # resolves them from the monorepo even though the Hono API never uses them.
@@ -123,11 +123,12 @@ COPY --from=pruner-migrator /app/out/full/ .
 COPY --from=pruner-migrator /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('./package.json','utf8'));if(p.pnpm)delete p.pnpm.supportedArchitectures;fs.writeFileSync('./package.json',JSON.stringify(p,null,2));"
 # No --prod: drizzle-kit + tsx are devDeps but needed to run migrations/seeds
-RUN pnpm deploy --filter=@workspace/auth /deploy/auth
-# Inject packageManager so corepack knows which pnpm to use at runtime
-# without making any network requests. Without this field corepack tries
-# to fetch the latest version and fails (container has no internet).
-RUN node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('/deploy/auth/package.json','utf8'));p.packageManager='pnpm@9.15.9';fs.writeFileSync('/deploy/auth/package.json',JSON.stringify(p,null,2));"
+RUN pnpm deploy --filter=@workspace/auth --legacy /deploy/auth
+# pnpm deploy --legacy does not rewrite workspace: protocol refs. Strip any
+# remaining workspace: entries (e.g. @workspace/typescript-config) — they are
+# compile-time-only packages with no runtime value and cannot be resolved
+# inside a container that has no monorepo workspace.
+RUN node -e "   const fs=require('fs');   const pkg=JSON.parse(fs.readFileSync('/deploy/auth/package.json','utf8'));   for(const s of['dependencies','devDependencies','peerDependencies','optionalDependencies']){     if(!pkg[s])continue;     for(const[k,v]of Object.entries(pkg[s])){if(v.startsWith('workspace:'))delete pkg[s][k];}   }   fs.writeFileSync('/deploy/auth/package.json',JSON.stringify(pkg,null,2)); "
 RUN cd /deploy/auth && rm -rf \
   node_modules/.pnpm/next@* \
   node_modules/.pnpm/@next+* \
@@ -148,7 +149,7 @@ RUN cd /deploy/auth && rm -rf \
 # -----------------------------------------------------------------------------
 
 ### API — distroless + cleaned deploy output
-FROM gcr.io/distroless/nodejs20-debian12 AS api
+FROM gcr.io/distroless/nodejs22-debian12 AS api
 
 WORKDIR /app
 
@@ -165,7 +166,7 @@ CMD ["dist/src/index.js"]
 ### Admin — distroless + Nitro self-contained server bundle
 # TanStack Start (via Nitro) outputs to .output/ by default.
 # The server entry point is .output/server/index.mjs.
-FROM gcr.io/distroless/nodejs20-debian12 AS admin
+FROM gcr.io/distroless/nodejs22-debian12 AS admin
 
 WORKDIR /app
 
@@ -176,24 +177,22 @@ ENV NODE_ENV=production
 ENV PORT=3000
 CMD ["output/server/index.mjs"]
 
-### Migrator — slim + pnpm (needs shell + pnpm run for scripts)
-FROM node:20-slim AS migrator
-
-# Install pnpm directly via npm rather than corepack.
-# Corepack installs to the calling user's home cache (~/.cache/node/corepack).
-# When the container runs as the non-root migrator user that directory does not
-# exist and corepack throws EACCES before it can even check COREPACK_ENABLE_NETWORK.
-# A plain npm global install puts pnpm in /usr/local/bin which is readable by all users.
-RUN npm install -g pnpm@9.15.9
+### Migrator — slim node (needs shell to run drizzle-kit + tsx directly)
+FROM node:22-slim AS migrator
 
 RUN groupadd --system --gid 1001 nodejs \
   && useradd --system --uid 1001 --gid nodejs migrator
 
 WORKDIR /app
+# WORKDIR creates /app owned by root; give the migrator user write access
+# so drizzle-kit can write migration state files at runtime.
+RUN chown migrator:nodejs /app
 
 COPY --from=deployer-migrator --chown=migrator:nodejs /deploy/auth .
 
 USER migrator
 
-# seed:admin is idempotent — upserts admin using DEFAULT_ADMIN_* env vars
-CMD ["sh", "-c", "pnpm db:migrate && pnpm seed:admin"]
+# Call binaries directly instead of via `pnpm run` to bypass pnpm 11's
+# verify-deps-before-run pre-script hook, which tries to rerun `pnpm install`
+# and fails because there is no registry access inside the container.
+CMD ["sh", "-c", "node_modules/.bin/drizzle-kit migrate && node_modules/.bin/tsx src/seed-admin.ts"]

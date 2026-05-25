@@ -4,7 +4,8 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", ".output/**"],
+      "env": ["VITE_API_URL"]
     },
     "dev": {
       "cache": false,

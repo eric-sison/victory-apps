@@ -38,12 +38,12 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const envScript = `window.__ENV__=${JSON.stringify({ VITE_API_URL: import.meta.env.VITE_API_URL ?? "" })}`
+ // const envScript = `window.__ENV__=${JSON.stringify({ VITE_API_URL: import.meta.env.VITE_API_URL ?? "" })}`
 
   return (
     <html lang="en" className="h-svh antialiased" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: envScript }} />
+        {/* <script dangerouslySetInnerHTML={{ __html: envScript }} /> */}
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
