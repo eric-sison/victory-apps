@@ -1,18 +1,14 @@
-import {
-  HeadContent,
-  Scripts,
-  createRootRouteWithContext,
-} from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import type { QueryClient } from "@tanstack/react-query"
+import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
+import { TanStackDevtools } from "@tanstack/react-devtools"
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools"
+import { Toaster } from "@workspace/ui/components/Sonner"
+import { themeScript } from "#/utils/theme"
+import appCss from "@workspace/ui/globals.css?url"
 
-import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
-
-import appCss from '../styles.css?url'
-
-import type { QueryClient } from '@tanstack/react-query'
-
-interface MyRouterContext {
+type MyRouterContext = {
   queryClient: QueryClient
 }
 
@@ -20,44 +16,46 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: "utf-8",
       },
       {
-        name: 'viewport',
-        content: 'width=device-width, initial-scale=1',
+        name: "viewport",
+        content: "width=device-width, initial-scale=1",
       },
       {
-        title: 'TanStack Start Starter',
+        title: "Victory | Selah",
       },
     ],
     links: [
       {
-        rel: 'stylesheet',
+        rel: "stylesheet",
         href: appCss,
       },
     ],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: () => <div>Not found!</div>,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="h-svh antialiased" suppressHydrationWarning>
       <head>
         <HeadContent />
+
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: required for SSR theme initialization */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body>
+      <body className="h-full overflow-x-hidden">
         {children}
+        <Toaster />
         <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
+          eventBusConfig={{ debug: false }}
+          config={{ position: "bottom-right" }}
           plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-            TanStackQueryDevtools,
+            { name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> },
+            { name: "Tanstack Query", render: <ReactQueryDevtoolsPanel /> },
+            formDevtoolsPlugin(),
           ]}
         />
         <Scripts />
