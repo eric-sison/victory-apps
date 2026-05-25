@@ -1,4 +1,4 @@
-import type { LinkProps } from "@tanstack/react-router"
+import type { LinkProps } from "@tanstack/react-router";
 import {
   type LucideIcon,
   CircleGauge,
@@ -9,27 +9,27 @@ import {
   ShieldOff,
   UserCog,
   Users,
-} from "lucide-react"
+} from "lucide-react";
 
-type AppPath = LinkProps["to"]
+type AppPath = LinkProps["to"];
 
 export type Item = {
-  id: string
-  title: string
-  path?: AppPath
-  icon: LucideIcon
-  description?: string | undefined
-}
+  id: string;
+  title: string;
+  path?: AppPath;
+  icon: LucideIcon;
+  description?: string | undefined;
+};
 
 export type SidebarItem = {
-  group?: string | undefined
-  groupId: string
+  group?: string | undefined;
+  groupId: string;
   items: Array<
     Item & {
-      subItems: Array<Item>
+      subItems: Array<Item>;
     }
-  >
-}
+  >;
+};
 
 export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
   {
@@ -94,6 +94,6 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
       },
     ],
   },
-]
+];
 
-export const SIDEBAR_FOOTER_ITEMS: Item[] = []
+export const SIDEBAR_FOOTER_ITEMS: Item[] = [];

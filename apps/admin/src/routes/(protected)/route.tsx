@@ -1,8 +1,8 @@
-import { AppNavBar } from "#/components/AppNavbar"
-import { AppSidebar } from "#/components/AppSidebar"
-import { requireAuth } from "#/lib/auth-fns"
-import { createFileRoute, Outlet } from "@tanstack/react-router"
-import { SidebarInset, SidebarProvider } from "@workspace/ui/components/Sidebar"
+import { AppNavBar } from "#/components/AppNavbar";
+import { AppSidebar } from "#/components/AppSidebar";
+import { requireAuth } from "#/lib/auth-fns";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { SidebarInset, SidebarProvider } from "@workspace/ui/components/Sidebar";
 
 export const Route = createFileRoute("/(protected)")({
   beforeLoad: async ({ location }) =>
@@ -12,10 +12,10 @@ export const Route = createFileRoute("/(protected)")({
       },
     }),
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const { user } = Route.useRouteContext()
+  const { user } = Route.useRouteContext();
 
   return (
     <SidebarProvider>
@@ -27,5 +27,5 @@ function RouteComponent() {
         </main>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

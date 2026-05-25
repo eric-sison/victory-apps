@@ -1,4 +1,4 @@
-import { Fragment, type FunctionComponent } from "react"
+import { Fragment, type FunctionComponent } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,34 +15,34 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
   useSidebar,
-} from "@workspace/ui/components/Sidebar"
-import { SIDEBAR_FOOTER_ITEMS, SIDEBAR_CONTENT_ITEMS as sidebarItems } from "#/utils/sidebar-items"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/Collapsible"
-import { ChevronRight } from "lucide-react"
+} from "@workspace/ui/components/Sidebar";
+import { SIDEBAR_FOOTER_ITEMS, SIDEBAR_CONTENT_ITEMS as sidebarItems } from "#/utils/sidebar-items";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/Collapsible";
+import { ChevronRight } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/DropdownMenu"
-import { Link, useLocation, useNavigate } from "@tanstack/react-router"
-import type { auth } from "@workspace/auth/server"
+} from "@workspace/ui/components/DropdownMenu";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import type { auth } from "@workspace/auth/server";
 
 type AppSidebarProps = {
-  user: typeof auth.$Infer.Session.user
-}
+  user: typeof auth.$Infer.Session.user;
+};
 
 export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
-  const { open } = useSidebar()
-  const { pathname } = useLocation()
+  const { open } = useSidebar();
+  const { pathname } = useLocation();
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const setActiveItem = (path: string | undefined) => {
-    if (!path) return false
-    return pathname === path || pathname.startsWith(`${path}/`)
-  }
+    if (!path) return false;
+    return pathname === path || pathname.startsWith(`${path}/`);
+  };
 
   return (
     <Sidebar collapsible="icon" variant="inset">
@@ -122,7 +122,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                           </SidebarMenuItem>
                         }
                       />
-                    )
+                    );
                   }
 
                   // Render sub-items in a dropdown menu
@@ -140,7 +140,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                           />
                           <DropdownMenuContent align="start" side="right">
                             {item.subItems.map((subItem, index) => {
-                              const isLast = index === item.subItems.length - 1
+                              const isLast = index === item.subItems.length - 1;
                               return (
                                 <Fragment key={subItem.id}>
                                   <DropdownMenuItem onClick={() => navigate({ to: subItem.path })}>
@@ -149,12 +149,12 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                                   </DropdownMenuItem>
                                   {!isLast && <DropdownMenuSeparator />}
                                 </Fragment>
-                              )
+                              );
                             })}
                           </DropdownMenuContent>
                         </SidebarMenuItem>
                       </DropdownMenu>
-                    )
+                    );
                   }
 
                   // Render items as normal sidebar menu item
@@ -173,7 +173,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                         />
                       </SidebarMenuItem>
                     )
-                  )
+                  );
                 })}
               </SidebarMenu>
             </SidebarGroupContent>
@@ -204,5 +204,5 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
 
       <SidebarRail />
     </Sidebar>
-  )
-}
+  );
+};

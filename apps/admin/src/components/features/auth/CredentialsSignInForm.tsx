@@ -1,6 +1,6 @@
-import type { FunctionComponent } from "react"
-import z from "zod"
-import { useMutation } from "@tanstack/react-query"
+import type { FunctionComponent } from "react";
+import z from "zod";
+import { useMutation } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -8,26 +8,36 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@workspace/ui/components/Card"
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@workspace/ui/components/Field"
-import { Input } from "@workspace/ui/components/Input"
-import { Button } from "@workspace/ui/components/Button"
-import { toast } from "@workspace/ui/components/Sonner"
-import { Spinner } from "@workspace/ui/components/Spinner"
-import { ErrorMessages } from "#/utils/error-messages"
-import { useForm } from "@tanstack/react-form"
-import { authClient } from "#/lib/auth-client"
+} from "@workspace/ui/components/Card";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@workspace/ui/components/Field";
+import { Input } from "@workspace/ui/components/Input";
+import { Button } from "@workspace/ui/components/Button";
+import { toast } from "@workspace/ui/components/Sonner";
+import { Spinner } from "@workspace/ui/components/Spinner";
+import { ErrorMessages } from "#/utils/error-messages";
+import { useForm } from "@tanstack/react-form";
+import { authClient } from "#/lib/auth-client";
 
 type CredentialsSignInFormProps = {
-  callbackURL?: string
-}
+  callbackURL?: string;
+};
 
 const CredentialsSignInFormSchema = z.object({
   email: z.email({ error: "Please enter a valid email." }),
-  password: z.string().min(8, { error: "Password must be at least 8 characters." }),
-})
+  password: z
+    .string()
+    .min(8, { error: "Password must be at least 8 characters." }),
+});
 
-export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps> = ({ callbackURL }) => {
+export const CredentialsSignInForm: FunctionComponent<
+  CredentialsSignInFormProps
+> = ({ callbackURL }) => {
   const form = useForm({
     validators: {
       onSubmit: CredentialsSignInFormSchema,
@@ -37,7 +47,7 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
       password: "",
     },
     onSubmit: async ({ value }) => await mutateAsync(value),
-  })
+  });
 
   const { isPending, mutateAsync } = useMutation({
     mutationKey: ["credentials-sign-in"],
@@ -48,60 +58,63 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
         rememberMe: true, // TODO: add control here
         fetchOptions: {
           onError(ctx) {
-            let errorMessage = ""
+            let errorMessage = "";
 
             switch (ctx.error.status) {
               case 401: {
-                errorMessage = ErrorMessages[401].INVALID_CREDENTIALS.short
-                break
+                errorMessage = ErrorMessages[401].INVALID_CREDENTIALS.short;
+                break;
               }
               case 404: {
-                errorMessage = ErrorMessages[404].RESOURCE_NOT_FOUND.short
-                break
+                errorMessage = ErrorMessages[404].RESOURCE_NOT_FOUND.short;
+                break;
               }
               case 429: {
-                errorMessage = ErrorMessages[429].TOO_MANY_REQUESTS.short
-                break
+                errorMessage = ErrorMessages[429].TOO_MANY_REQUESTS.short;
+                break;
               }
               case 500: {
-                errorMessage = ErrorMessages[500].SERVER_ERROR.short
-                break
+                errorMessage = ErrorMessages[500].SERVER_ERROR.short;
+                break;
               }
               default: {
-                errorMessage = "Something went wrong. Please try again."
-                console.error(ctx.error)
-                break
+                errorMessage = "Something went wrong. Please try again.";
+                console.error(ctx.error);
+                break;
               }
             }
 
             toast.error(`${errorMessage}`, {
               position: "top-center",
-            })
+            });
           },
         },
-      })
+      });
     },
-  })
+  });
 
   return (
     <Card className="w-sm">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
-        <CardDescription>Enter your credentials below to continue.</CardDescription>
+        <CardDescription>
+          Enter your credentials below to continue.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
           id="credentials-signin-form"
           onSubmit={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            form.handleSubmit()
+            e.preventDefault();
+            e.stopPropagation();
+            form.handleSubmit();
           }}
         >
           <FieldGroup>
             <form.Field name="email">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Email address</FieldLabel>
@@ -117,16 +130,19 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
                     {isInvalid ? (
                       <FieldError errors={field.state.meta.errors} />
                     ) : (
-                      <FieldDescription>Please enter your active email address.</FieldDescription>
+                      <FieldDescription>
+                        Please enter your active email address.
+                      </FieldDescription>
                     )}
                   </Field>
-                )
+                );
               }}
             </form.Field>
 
             <form.Field name="password">
               {(field) => {
-                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+                const isInvalid =
+                  field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
                   <Field data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name}>Password</FieldLabel>
@@ -144,10 +160,12 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
                     {isInvalid ? (
                       <FieldError errors={field.state.meta.errors} />
                     ) : (
-                      <FieldDescription>Must be at least 8 characters long.</FieldDescription>
+                      <FieldDescription>
+                        Must be at least 8 characters long.
+                      </FieldDescription>
                     )}
                   </Field>
-                )
+                );
               }}
             </form.Field>
           </FieldGroup>
@@ -155,11 +173,16 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
       </CardContent>
       <CardFooter>
         <Field>
-          <Button disabled={isPending} type="submit" form="credentials-signin-form">
-            {isPending && <Spinner />} <span>{isPending ? "Signing in..." : "Sign In"}</span>
+          <Button
+            disabled={isPending}
+            type="submit"
+            form="credentials-signin-form"
+          >
+            {isPending && <Spinner />}{" "}
+            <span>{isPending ? "Signing in..." : "Sign In"}</span>
           </Button>
         </Field>
       </CardFooter>
     </Card>
-  )
-}
+  );
+};

@@ -4,6 +4,7 @@ packages:
 
 # 1. New home for onlyBuiltDependencies
 allowBuilds:
+  core-js: false
   esbuild: true
   lightningcss: true
   msw: true

@@ -1,27 +1,27 @@
-import type { auth } from "@workspace/auth/server"
-import { useState, useEffect, type FunctionComponent } from "react"
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/Avatar"
-import { cn } from "@workspace/ui/lib/utils"
+import type { auth } from "@workspace/auth/server";
+import { useState, useEffect, type FunctionComponent } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/Avatar";
+import { cn } from "@workspace/ui/lib/utils";
 
 type AppNavBarProps = {
-  user: typeof auth.$Infer.Session.user
-}
+  user: typeof auth.$Infer.Session.user;
+};
 
 export const AppNavBar: FunctionComponent<AppNavBarProps> = ({ user }) => {
-  const [visible, setVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const [visible, setVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY
+      const currentScrollY = window.scrollY;
 
-      setVisible(currentScrollY < lastScrollY || currentScrollY < 80)
-      setLastScrollY(currentScrollY)
-    }
+      setVisible(currentScrollY < lastScrollY || currentScrollY < 80);
+      setLastScrollY(currentScrollY);
+    };
 
-    window.addEventListener("scroll", handleScroll, { passive: true })
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [lastScrollY])
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   return (
     <nav
@@ -40,5 +40,5 @@ export const AppNavBar: FunctionComponent<AppNavBarProps> = ({ user }) => {
         </div>
       </section>
     </nav>
-  )
-}
+  );
+};

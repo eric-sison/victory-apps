@@ -1,16 +1,16 @@
-import type { QueryClient } from "@tanstack/react-query"
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router"
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools"
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools"
-import { TanStackDevtools } from "@tanstack/react-devtools"
-import { formDevtoolsPlugin } from "@tanstack/react-form-devtools"
-import { Toaster } from "@workspace/ui/components/Sonner"
-import { themeScript } from "#/utils/theme"
-import appCss from "@workspace/ui/globals.css?url"
+import type { QueryClient } from "@tanstack/react-query";
+import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import { Toaster } from "@workspace/ui/components/Sonner";
+import { themeScript } from "#/utils/theme";
+import appCss from "@workspace/ui/globals.css?url";
 
 type MyRouterContext = {
-  queryClient: QueryClient
-}
+  queryClient: QueryClient;
+};
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   head: () => ({
@@ -35,7 +35,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
   shellComponent: RootDocument,
   notFoundComponent: () => <div>Not found!</div>,
-})
+});
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
@@ -61,5 +61,5 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
-  )
+  );
 }
