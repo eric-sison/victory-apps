@@ -41,7 +41,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
 
   const setActiveItem = (path: string | undefined) => {
     if (!path) return false
-    return pathname === path || pathname.startsWith(path + "/")
+    return pathname === path || pathname.startsWith(`${path}/`)
   }
 
   return (
@@ -74,8 +74,8 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {sidebarItems(user.id).map((sidebarItem, index) => (
-          <SidebarGroup key={index}>
+        {sidebarItems(user.id).map((sidebarItem) => (
+          <SidebarGroup key={sidebarItem.groupId}>
             {sidebarItem.group && (
               <SidebarGroupLabel className="text-[10px] font-bold tracking-wider uppercase">
                 {sidebarItem.group}
@@ -83,12 +83,12 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
             )}
             <SidebarGroupContent>
               <SidebarMenu>
-                {sidebarItem.items.map((item, index) => {
+                {sidebarItem.items.map((item) => {
                   // Render sub items in collapsible
                   if (item.subItems && open) {
                     return (
                       <Collapsible
-                        key={index}
+                        key={item.id}
                         className="group/collapsible"
                         defaultOpen={item.subItems.some((sub) => sub.path === pathname)}
                         render={
@@ -128,7 +128,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                   // Render sub-items in a dropdown menu
                   if (item.subItems && !open) {
                     return (
-                      <DropdownMenu key={index}>
+                      <DropdownMenu key={item.id}>
                         <SidebarMenuItem>
                           <DropdownMenuTrigger
                             render={
@@ -140,9 +140,9 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                           />
                           <DropdownMenuContent align="start" side="right">
                             {item.subItems.map((subItem, index) => {
-                              const isLast = index === item.subItems!.length - 1
+                              const isLast = index === item.subItems.length - 1
                               return (
-                                <Fragment key={index}>
+                                <Fragment key={subItem.id}>
                                   <DropdownMenuItem onClick={() => navigate({ to: subItem.path })}>
                                     {subItem.icon && <subItem.icon />}
                                     <span>{subItem.title}</span>
@@ -160,7 +160,7 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                   // Render items as normal sidebar menu item
                   return (
                     item.path && (
-                      <SidebarMenuItem key={index}>
+                      <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton
                           tooltip={item.title}
                           isActive={setActiveItem(item.path)}
@@ -183,8 +183,8 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
 
       <SidebarFooter>
         <SidebarMenu>
-          {SIDEBAR_FOOTER_ITEMS.map((item, index) => (
-            <SidebarMenuItem key={index}>
+          {SIDEBAR_FOOTER_ITEMS.map((item) => (
+            <SidebarMenuItem key={item.id}>
               {item.path && (
                 <SidebarMenuButton
                   tooltip={item.title}

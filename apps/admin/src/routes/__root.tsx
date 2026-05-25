@@ -38,17 +38,16 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
- // const envScript = `window.__ENV__=${JSON.stringify({ VITE_API_URL: import.meta.env.VITE_API_URL ?? "" })}`
-
   return (
     <html lang="en" className="h-svh antialiased" suppressHydrationWarning>
       <head>
-        {/* <script dangerouslySetInnerHTML={{ __html: envScript }} /> */}
         <HeadContent />
+
+        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: required for SSR theme initialization */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="h-full overflow-x-hidden">
-        <>{children}</>
+        {children}
         <Toaster />
         <TanStackDevtools
           eventBusConfig={{ debug: false }}

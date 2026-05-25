@@ -99,9 +99,8 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
           }}
         >
           <FieldGroup>
-            <form.Field
-              name="email"
-              children={(field) => {
+            <form.Field name="email">
+              {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
@@ -123,11 +122,10 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
                   </Field>
                 )
               }}
-            />
+            </form.Field>
 
-            <form.Field
-              name="password"
-              children={(field) => {
+            <form.Field name="password">
+              {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
                 return (
                   <Field data-invalid={isInvalid}>
@@ -151,7 +149,7 @@ export const CredentialsSignInForm: FunctionComponent<CredentialsSignInFormProps
                   </Field>
                 )
               }}
-            />
+            </form.Field>
           </FieldGroup>
         </form>
       </CardContent>
