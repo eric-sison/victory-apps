@@ -1,8 +1,8 @@
 import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "@workspace/auth/server";
 import z from "zod";
+import { auth } from "#/lib/auth";
 
 export const getSession = createServerFn().handler(async () => {
   try {
