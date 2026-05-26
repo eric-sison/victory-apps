@@ -1,41 +1,38 @@
 # =============================================================================
-# victory-apps — docker/docker-compose.yaml
+# victory-apps — Docker Compose (production)
 #
-# Run from the repo root:
-#   docker compose -f docker/docker-compose.yaml up -d
-# Or from docker/:
-#   docker compose up -d
+# apps/api has been merged into apps/admin. The Hono API is embedded inside
+# the TanStack Start app and served from the same Nitro server on port 3000.
+# There is no separate api service — admin handles both UI and API.
 # =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
-  # Database
+  # PostgreSQL
   # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
-    container_name: postgres
+    container_name: victory-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - internal
-      - public # required: internal=true blocks host port publishing
+      - public
     ports:
       - "127.0.0.1:5432:5432"
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    security_opt:
-      - no-new-privileges:true
-    shm_size: 128mb
     logging:
       driver: "json-file"
       options:
@@ -43,11 +40,11 @@ services:
         max-file: "3"
 
   # ---------------------------------------------------------------------------
-  # pgAdmin (optional — omit in production)
+  # pgAdmin — optional database GUI
   # ---------------------------------------------------------------------------
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: pgadmin
+    container_name: victory-pgadmin
     restart: unless-stopped
     depends_on:
       postgres:
@@ -55,9 +52,6 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-      PGADMIN_CONFIG_SERVER_MODE: "True"
-      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "True"
-      PGADMIN_CONFIG_LOGIN_BANNER: '"Authorized users only."'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     networks:
@@ -88,6 +82,13 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      # Required to satisfy apps/admin/src/utils/env.ts validation at startup.
+      # drizzle.config.ts imports env.ts, which validates all vars eagerly —
+      # even ones the migrator doesn't actually use at runtime.
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      RESET_PASSWORD_CALLBACK: ${RESET_PASSWORD_CALLBACK}
       DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
       DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
       DEFAULT_ADMIN_NAME: ${DEFAULT_ADMIN_NAME}
@@ -108,14 +109,18 @@ services:
         max-file: "2"
 
   # ---------------------------------------------------------------------------
-  # API
+  # Admin — TanStack Start (Nitro) SSR app + embedded Hono API
+  #
+  # The Hono API is mounted at /api/* via a TanStack Start wildcard route.
+  # This single container serves both the admin UI and all API endpoints,
+  # including /api/healthcheck, /api/auth/*, /api/docs, etc.
   # ---------------------------------------------------------------------------
-  api:
+  admin:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-      target: api
-    container_name: victory-api
+      target: admin
+    container_name: victory-admin
     restart: unless-stopped
     depends_on:
       postgres:
@@ -126,69 +131,27 @@ services:
       - .env
     environment:
       NODE_ENV: production
-      PORT: "3001"
+      PORT: "3000"
+      # Database — required for server-side auth session helpers
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      # Better Auth — server points to itself (API is embedded on the same server)
       BETTER_AUTH_URL: ${BETTER_AUTH_URL}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      # CORS — comma-separated list of allowed origins for the embedded Hono API
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-    networks:
-      - internal
-      - public
-    ports:
-      - "127.0.0.1:3001:3001"
-    security_opt:
-      - no-new-privileges:true
-    healthcheck:
-      # wget/curl/sh are not available in distroless — use Node.js http module
-      test:
-        [
-          "CMD",
-          "/nodejs/bin/node",
-          "-e",
-          "require('http').get('http://localhost:3001/api/healthcheck',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 15s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  # ---------------------------------------------------------------------------
-  # Admin — TanStack Start (Nitro) SSR app
-  # ---------------------------------------------------------------------------
-  admin:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      target: admin
-      args:
-        # VITE_API_URL is baked into the client bundle at build time so the
-        # browser knows the public-facing API URL.
-        VITE_API_URL: ${VITE_API_URL}
-    container_name: victory-admin
-    restart: unless-stopped
-    depends_on:
-      api:
-        condition: service_healthy
-    env_file:
-      - .env
-    environment:
-      NODE_ENV: production
-      PORT: "3000"
-      # VITE_API_URL at runtime is the internal Docker hostname used by the
-      # Nitro SSR server for server-side auth requests. Nitro maps
-      # import.meta.env to process.env at runtime (no static replacement), so
-      # this must be an actual env var — the build arg alone is not enough.
-      # The client bundle is unaffected: it has the public URL baked in above.
-      VITE_API_URL: http://victory-api:3001
-      # Other server-side runtime vars
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-      BETTER_AUTH_URL: http://victory-api:3001/api/auth
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      # Default admin user — used by the migrator seed (passed here for consistency)
+      DEFAULT_ADMIN_EMAIL: ${DEFAULT_ADMIN_EMAIL}
+      DEFAULT_ADMIN_PASSWORD: ${DEFAULT_ADMIN_PASSWORD}
+      DEFAULT_ADMIN_NAME: ${DEFAULT_ADMIN_NAME}
+      # SMTP — used by Better Auth for password reset emails
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+      # Password reset callback — URL Better Auth appends the reset token to
+      RESET_PASSWORD_CALLBACK: ${RESET_PASSWORD_CALLBACK}
     networks:
       - internal
       - public
@@ -203,7 +166,7 @@ services:
           "CMD",
           "/nodejs/bin/node",
           "-e",
-          "require('http').get('http://localhost:3000/',(r)=>{process.exit(r.statusCode<400?0:1)}).on('error',()=>process.exit(1))",
+          "require('http').get('http://localhost:3000/api/healthcheck',(r)=>{process.exit(r.statusCode===200?0:1)}).on('error',()=>process.exit(1))",
         ]
       interval: 15s
       timeout: 5s

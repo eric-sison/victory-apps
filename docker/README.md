@@ -1,24 +1,25 @@
 # docker
 
-Production Docker setup for **victory-apps** — a pnpm + Turborepo monorepo running a Hono API (`apps/api`) and a TanStack Start admin dashboard (`apps/admin`).
+Production Docker setup for **victory-apps** — a pnpm + Turborepo monorepo.
+
+The Hono API embedded inside the TanStack Start app and served by the same Nitro server via a wildcard route (`/api/$`). There is no separate `api` container.
 
 ---
 
 ## Services
 
-| Service    | Image                              | Port  | Description                                              |
-| ---------- | ---------------------------------- | ----- | -------------------------------------------------------- |
-| `postgres` | `postgres:16-alpine`               | 5432  | Primary database. Bound to `127.0.0.1` only.            |
-| `pgadmin`  | `dpage/pgadmin4:latest`            | 5050  | Database GUI — optional, omit in production.             |
-| `migrator` | Built from `Dockerfile` (migrator) | —     | Runs `drizzle-kit migrate` + `seed:admin`, then exits.   |
-| `api`      | Built from `Dockerfile` (api)      | 3001  | Hono REST API. Starts after migrator completes.          |
-| `admin`    | Built from `Dockerfile` (admin)    | 3000  | TanStack Start SSR app. Starts after the API is healthy. |
+| Service    | Image                              | Port | Description                                                                  |
+| ---------- | ---------------------------------- | ---- | ---------------------------------------------------------------------------- |
+| `postgres` | `postgres:16-alpine`               | 5432 | Primary database. Bound to `127.0.0.1` only.                                 |
+| `pgadmin`  | `dpage/pgadmin4:latest`            | 5050 | Database GUI — optional, omit in production.                                 |
+| `migrator` | Built from `Dockerfile` (migrator) | —    | Runs `drizzle-kit migrate` + `seed:admin`, then exits.                       |
+| `admin`    | Built from `Dockerfile` (admin)    | 3000 | TanStack Start SSR app + embedded Hono API. Starts after migrator completes. |
 
 ### Networks
 
 Two isolated Docker networks are used:
 
-- `internal` — bridge network with `internal: true`. Containers here cannot reach the public internet. Used for service-to-service communication (api ↔ postgres, admin ↔ api).
+- `internal` — bridge network with `internal: true`. Containers here cannot reach the public internet. Used for service-to-service communication (admin ↔ postgres).
 - `public` — bridge network with `internal: false`. Used only for host port publishing (postgres and pgadmin need this alongside `internal` due to how Docker port binding works).
 
 ---
@@ -27,18 +28,17 @@ Two isolated Docker networks are used:
 
 The `Dockerfile` uses a layered multi-stage build to produce minimal, secure runtime images.
 
-| Stage             | Purpose                                                                    |
-| ----------------- | -------------------------------------------------------------------------- |
-| `base`            | Node 22 slim + pnpm 11.3.0 + Turborepo 2 — shared build tooling           |
-| `pruner-*`        | `turbo prune` — strips the monorepo down to only what each app needs       |
-| `installer-*`     | `pnpm install` — resolves and installs dependencies for each pruned scope  |
-| `builder-*`       | `pnpm turbo build` — compiles each app                                     |
-| `deployer-*`      | `pnpm deploy` — produces a clean, self-contained deployment bundle         |
-| `api` (runner)    | `gcr.io/distroless/nodejs22-debian12` — minimal runtime, no shell          |
-| `admin` (runner)  | `gcr.io/distroless/nodejs22-debian12` — Nitro SSR server                   |
-| `migrator` (runner) | `node:22-slim` — needs a shell to run `drizzle-kit` and `tsx`            |
-
-> `VITE_API_URL` is a required build argument for the `admin` stage. It is baked into the client bundle at build time and must be the **public-facing** API URL (e.g. `http://localhost:3001`).
+| Stage                | Purpose                                                                        |
+| -------------------- | ------------------------------------------------------------------------------ |
+| `base`               | Node 22 slim + pnpm 11.3.0 + Turborepo 2 — shared build tooling                |
+| `pruner-admin`       | `turbo prune` — strips the monorepo down to only what the admin app needs      |
+| `pruner-migrator`    | `turbo prune` — strips the monorepo down to only `@workspace/auth`             |
+| `installer-admin`    | `pnpm install` — resolves and installs dependencies for the admin pruned scope |
+| `installer-migrator` | `pnpm install` — resolves and installs dependencies for the migrator scope     |
+| `builder-admin`      | `pnpm turbo build` — compiles the admin app (UI + embedded Hono API)           |
+| `deployer-migrator`  | `pnpm deploy` — produces a clean, self-contained deployment bundle             |
+| `admin` (runner)     | `gcr.io/distroless/nodejs22-debian12` — minimal runtime, no shell              |
+| `migrator` (runner)  | `node:22-slim` — needs a shell to run `drizzle-kit` and `tsx`                  |
 
 ---
 
@@ -68,12 +68,10 @@ PGADMIN_DEFAULT_PASSWORD=use_a_strong_password
 # Better Auth — must be at least 32 characters
 # Generate with: openssl rand -base64 32
 BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-BETTER_AUTH_URL=http://localhost:3001/api/auth
+# API is embedded in the admin app on port 3000 — not a separate service
+BETTER_AUTH_URL=http://localhost:3000/api/auth
 
-# Client bundle build arg — must be the public-facing API URL
-VITE_API_URL=http://localhost:3001
-
-# CORS — comma-separated list of origins allowed to call the API
+# CORS — comma-separated list of origins allowed to call the embedded API
 ALLOWED_ORIGINS=http://localhost:3000
 
 # Default admin user — created automatically on first deploy
@@ -105,10 +103,10 @@ pnpm deploy:up
 
 This runs `scripts/deploy.sh` which handles the full deployment in order:
 
-1. **Build** — `api`, `admin`, and `migrator` images via `DOCKER_BUILDKIT=1`
+1. **Build** — `admin` and `migrator` images via `DOCKER_BUILDKIT=1`
 2. **Infrastructure** — starts `postgres` and `pgadmin`, waits for postgres to be healthy
 3. **Migrator** — runs database migrations and seeds the default admin user, then exits
-4. **Services** — starts `api` and `admin`, waits for the API health check to pass
+4. **Services** — starts `admin`, waits for the health check to pass
 5. **Cleanup** — removes the migrator container, image, and dangling layers
 
 ---
@@ -131,7 +129,7 @@ pnpm deploy:up -- --skip-build     # Skip build, start services with existing im
 ```bash
 pnpm deploy:down                   # Stop containers and remove networks
 pnpm deploy:down:volumes           # Also remove named volumes (postgres_data, pgadmin_data)
-pnpm deploy:down:images            # Also remove built images (victory-api, victory-admin)
+pnpm deploy:down:images            # Also remove built images (victory-admin)
 pnpm deploy:down:all               # Remove everything — full reset
 ```
 
@@ -141,12 +139,12 @@ pnpm deploy:down:all               # Remove everything — full reset
 
 ## Ports
 
-| Service    | URL / Address           |
-| ---------- | ----------------------- |
-| Admin app  | http://localhost:3000   |
-| API        | http://localhost:3001   |
-| pgAdmin    | http://localhost:5050   |
-| PostgreSQL | localhost:5432          |
+| Service         | URL / Address                  |
+| --------------- | ------------------------------ |
+| Admin app + API | http://localhost:3000          |
+| API docs        | http://localhost:3000/api/docs |
+| pgAdmin         | http://localhost:5050          |
+| PostgreSQL      | localhost:5432                 |
 
 All ports are bound to `127.0.0.1` — they are not exposed to other machines on the network.
 
@@ -154,12 +152,11 @@ All ports are bound to `127.0.0.1` — they are not exposed to other machines on
 
 ## Health Checks
 
-Both `api` and `admin` have Docker health checks that use the Node.js `http` module directly, since the distroless base image has no shell, `wget`, or `curl`.
+The `admin` container has a Docker health check that uses the Node.js `http` module directly, since the distroless base image has no shell, `wget`, or `curl`.
 
-- **API** — `GET /api/healthcheck` → expects HTTP 200
-- **Admin** — `GET /` → expects HTTP < 400
+- **Admin** — `GET /api/healthcheck` → expects HTTP 200
 
-The `admin` service waits for the API to be healthy before starting (`depends_on: api: condition: service_healthy`).
+The Hono API's healthcheck endpoint is now served by the admin container at `/api/healthcheck` on port `3000`.
 
 ---
 
@@ -180,14 +177,5 @@ Postgres may not have finished initializing. The deploy script waits for `pg_isr
 **`BETTER_AUTH_SECRET` mismatch**
 All session errors after a fresh deploy are likely caused by this. Ensure every service in `docker/.env` shares the same secret value.
 
-**`VITE_API_URL` is empty in the client bundle**
-The `--env-file docker/.env` flag is required. Without it, Compose reads from the repo root `.env` which does not contain `VITE_API_URL`, and Vite bakes `undefined` into the bundle. Always use the deploy script rather than running `docker compose` directly.
-
-**Port already in use**
-Update the left-hand side of the relevant `ports:` mapping in `docker-compose.yaml` (e.g. `"127.0.0.1:3002:3001"`) and set the matching value in `docker/.env`.
-
-**Volume removal fails**
-Run `pnpm deploy:down` first to fully stop all containers before retrying `deploy:down:volumes` or `deploy:down:all`.
-
-**pgAdmin login**
-Use the `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` values from `docker/.env`. The postgres server is pre-registered via `pg-admin.json` — no manual server setup is needed.
+**Admin health check keeps failing**
+The health check hits `GET /api/healthcheck` on port `3000`. If it fails, check `docker logs victory-admin` — common causes are a missing required env var (the app exits at startup if `env.ts` validation fails) or a database connection problem.

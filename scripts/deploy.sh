@@ -1,68 +1,50 @@
 #!/usr/bin/env bash
 # =============================================================================
-# deploy.sh — Build and deploy victory-apps
-# Usage: ./deploy.sh [--no-cache] [--build-only] [--skip-build]
-# Run from the repo root.
+# scripts/deploy.sh — Production deploy for victory-apps
+#
+# apps/api has been merged into apps/admin. The Hono API is embedded inside
+# the TanStack Start app. Only two app images are built: admin + migrator.
 # =============================================================================
 
 set -euo pipefail
 
-# -----------------------------------------------------------------------------
-# Config
-# -----------------------------------------------------------------------------
-COMPOSE_FILE="docker/docker-compose.yaml"
-ENV_FILE="docker/.env"
-PROJECT_NAME="victory"
-
-# -----------------------------------------------------------------------------
-# Colours
-# -----------------------------------------------------------------------------
+# ─── Colours ──────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
 RESET='\033[0m'
 
-log()     { echo -e "${BLUE}[deploy]${RESET} $*"; }
-success() { echo -e "${GREEN}[deploy]${RESET} $*"; }
-warn()    { echo -e "${YELLOW}[deploy]${RESET} $*"; }
-error()   { echo -e "${RED}[deploy]${RESET} $*" >&2; }
-header()  { echo -e "\n${BOLD}${CYAN}==> $*${RESET}"; }
+log()     { echo -e "  ${BLUE}→${RESET} $*"; }
+success() { echo -e "  ${GREEN}✓${RESET} $*"; }
+warn()    { echo -e "  ${YELLOW}⚠${RESET} $*"; }
+error()   { echo -e "  ${RED}✗${RESET} $*" >&2; }
+header()  { echo -e "\n${BLUE}══════════════════════════════════════${RESET}\n  $*\n${BLUE}══════════════════════════════════════${RESET}"; }
 
-# -----------------------------------------------------------------------------
-# Flags
-# -----------------------------------------------------------------------------
+# ─── Config ───────────────────────────────────────────────────────────────────
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+COMPOSE_FILE="$REPO_ROOT/docker/docker-compose.yaml"
+ENV_FILE="$REPO_ROOT/docker/.env"
+PROJECT_NAME="victory"
+
+# ─── Flags ────────────────────────────────────────────────────────────────────
 NO_CACHE=""
 BUILD_ONLY=false
 SKIP_BUILD=false
 
 for arg in "$@"; do
   case $arg in
-    --no-cache)   NO_CACHE="--no-cache" ;;
-    --build-only) BUILD_ONLY=true ;;
-    --skip-build) SKIP_BUILD=true ;;
-    *)
-      error "Unknown argument: $arg"
-      echo "Usage: $0 [--no-cache] [--build-only] [--skip-build]"
-      exit 1
-      ;;
+    --no-cache)    NO_CACHE="--no-cache" ;;
+    --build-only)  BUILD_ONLY=true ;;
+    --skip-build)  SKIP_BUILD=true ;;
+    *) warn "Unknown flag: $arg" ;;
   esac
 done
 
-# -----------------------------------------------------------------------------
-# Preflight checks
-# -----------------------------------------------------------------------------
+# ─── Preflight ────────────────────────────────────────────────────────────────
 header "Preflight checks"
 
-# Must be run from repo root
-if [[ ! -f "$COMPOSE_FILE" ]]; then
-  error "Run this script from the repo root (docker/docker-compose.yaml not found)."
-  exit 1
-fi
-
-# Docker running?
 if ! docker info &>/dev/null; then
   error "Docker is not running. Start Docker Desktop and try again."
   exit 1
@@ -89,9 +71,9 @@ compose() {
 # -----------------------------------------------------------------------------
 if [[ "$SKIP_BUILD" == false ]]; then
   header "Step 1/4 — Building images"
-  log "Building api, admin, migrator... (this may take a few minutes)"
+  log "Building admin and migrator... (this may take a few minutes)"
 
-  DOCKER_BUILDKIT=1 compose build $NO_CACHE api admin migrator
+  DOCKER_BUILDKIT=1 compose build $NO_CACHE admin migrator
 
   success "Images built successfully."
 else
@@ -150,20 +132,20 @@ fi
 success "Migrations and seeding completed."
 
 # -----------------------------------------------------------------------------
-# Step 4 — Start API and Admin
+# Step 4 — Start Admin
 # -----------------------------------------------------------------------------
-header "Step 4/4 — Starting API and Admin"
-log "Starting api and admin services..."
+header "Step 4/4 — Starting Admin"
+log "Starting admin service..."
 
-compose up -d api admin
+compose up -d admin
 
-# Wait for API health check using docker inspect (no wget/jq/sh needed — works with distroless)
-log "Waiting for API to be healthy..."
+# Wait for Admin health check using docker inspect (no wget/jq/sh needed — works with distroless)
+log "Waiting for admin to be healthy..."
 RETRIES=20
-until [[ "$(docker inspect --format='{{.State.Health.Status}}' victory-api 2>/dev/null)" == "healthy" ]]; do
+until [[ "$(docker inspect --format='{{.State.Health.Status}}' victory-admin 2>/dev/null)" == "healthy" ]]; do
   RETRIES=$((RETRIES - 1))
   if [[ $RETRIES -eq 0 ]]; then
-    warn "API health check timed out — it may still be starting up."
+    warn "Admin health check timed out — it may still be starting up."
     break
   fi
   sleep 3
@@ -175,15 +157,14 @@ done
 header "Deployment complete"
 
 echo ""
-echo -e "  ${GREEN}✓${RESET} Admin app → http://localhost:3000"
-echo -e "  ${GREEN}✓${RESET} API       → http://localhost:3001"
-echo -e "  ${GREEN}✓${RESET} API docs  → http://localhost:3001/api/docs"
-echo -e "  ${GREEN}✓${RESET} pgAdmin   → http://localhost:5050"
+echo -e "  ${GREEN}✓${RESET} Admin app + API → http://localhost:3000"
+echo -e "  ${GREEN}✓${RESET} API docs        → http://localhost:3000/api/docs"
+echo -e "  ${GREEN}✓${RESET} pgAdmin         → http://localhost:5050"
 echo ""
 
-log "To tail all logs:       docker compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f"
-log "To tail a service:      docker compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f api"
-log "To stop everything:     docker compose -f $COMPOSE_FILE -p $PROJECT_NAME down"
+log "To tail all logs:        docker compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f"
+log "To tail a service:       docker compose -f $COMPOSE_FILE -p $PROJECT_NAME logs -f admin"
+log "To stop everything:      docker compose -f $COMPOSE_FILE -p $PROJECT_NAME down"
 log "To rebuild from scratch: $0 --no-cache"
 
 # -----------------------------------------------------------------------------
