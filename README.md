@@ -67,62 +67,40 @@ docker compose ps
 
 > In development, all outgoing emails are captured by Mailpit instead of being delivered. Open http://localhost:8025 to inspect them.
 
-### 5. Configure Environment Variables for `packages/auth`
+### 5. Configure Environment Variables for `apps/admin`
 
-`packages/auth` manages the database connection, migrations, and admin seeding.
+`apps/admin` is the TanStack Start app. It serves both the admin UI and the Hono API, connects directly to the database, and handles all authentication.
 
 ```bash
-cp packages/auth/.env.example packages/auth/.env
+cp apps/admin/.env.example apps/admin/.env
 ```
 
 ```dotenv
-# Database connection
-DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
-
-# Default admin user — used by the seed:admin script
-DEFAULT_ADMIN_EMAIL=admin@yourdomain.com
-DEFAULT_ADMIN_PASSWORD=your_secure_admin_password
-DEFAULT_ADMIN_NAME=Super Admin
-```
-
-### 6. Run Auth Migrations and Seed the Admin User
-
-```bash
-pnpm db:auth:migrate
-```
-
-This runs migrations and seeds the default admin user in one step. It will also start PostgreSQL automatically if it isn't already running.
-
-Migrations create all required tables: `users`, `sessions`, `accounts`, and `verifications`. The admin seed is idempotent — running it again replaces the existing admin with the values currently in `packages/auth/.env`.
-
-### 7. Configure Environment Variables for `apps/api`
-
-```bash
-cp apps/api/.env.example apps/api/.env
-```
-
-```dotenv
-# CORS — comma-separated list of allowed origins
-ALLOWED_ORIGINS=https://yourdomain.com,http://localhost:3000
-
-# Better Auth
-BETTER_AUTH_URL=http://localhost:3001/api/auth
-BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-
 # Database
 DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
 
-# SMTP — in dev this points to Mailpit (docker compose up)
-# In production, replace with your real SMTP provider credentials
+# Better Auth
+BETTER_AUTH_URL=http://localhost:3000/api/auth
+BETTER_AUTH_SECRET=your_secret_here_min_32_characters
+
+# CORS — comma-separated list of allowed origins
+ALLOWED_ORIGINS=http://localhost:3000
+
+# Default admin user — created by the seed script
+DEFAULT_ADMIN_EMAIL=admin@yourdomain.com
+DEFAULT_ADMIN_PASSWORD=your_secure_admin_password
+DEFAULT_ADMIN_NAME=Super Admin
+
+# Password reset callback — Better Auth appends ?token= to this URL
+RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/callback/reset-password
+
+# SMTP — in dev this points to Mailpit
 SMTP_HOST=localhost
 SMTP_PORT=1025
 SMTP_SECURE=false
 SMTP_USER=dev
 SMTP_PASSWORD=dev
 SMTP_FROM=noreply@example.com
-
-# Frontend — used to construct links in emails (password reset, etc.)
-RESET_PASSWORD_CALLBACK=http://localhost:3000/auth/callback/reset-password
 ```
 
 Generate a secret with:
@@ -131,51 +109,24 @@ Generate a secret with:
 openssl rand -base64 32
 ```
 
-> `BETTER_AUTH_SECRET` must be identical to the value in `apps/admin/.env`. A mismatch will cause all session validation to fail.
-
-> `SMTP_*` variables work for both dev (Mailpit) and production (any real SMTP provider) without any code changes — just update the values.
-
-> `RESET_PASSWORD_CALLBACK` must point to the frontend reset password page. Better Auth generates a token and appends it as a `?token=` query parameter to this URL.
-
-### 8. Configure Environment Variables for `apps/admin`
-
-`apps/admin` is the TanStack Start admin dashboard. It connects directly to the API and uses Better Auth for session management.
+### 6. Run Migrations and Seed the Admin User
 
 ```bash
-cp apps/admin/.env.example apps/admin/.env
+pnpm --filter admin db:migrate
+pnpm --filter admin db:seed
 ```
 
-```dotenv
-# Base URL of the Hono API
-VITE_API_URL=http://localhost:3001
+`db:migrate` applies all pending Drizzle migrations. `db:seed` creates the default admin user defined in your `.env`. The seed is idempotent — re-running it replaces the existing admin.
 
-# Database — required for server-side auth helpers
-DATABASE_URL=postgres://appuser:your_password@localhost:5432/appdb
-
-# Better Auth — must match apps/api exactly
-BETTER_AUTH_URL=http://localhost:3001/api/auth
-BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-```
-
-> `BETTER_AUTH_SECRET` must be identical to the value in `apps/api/.env`. A mismatch will cause all session validation to fail.
-
-> `VITE_*` variables are inlined into the client bundle at build time by Vite. Restart the dev server after changing any of them.
-
-### 9. Run the Apps
-
-Run all services from the root with Turborepo:
+### 7. Run the App
 
 ```bash
 pnpm dev
 ```
 
-Or in separate terminals:
+Or directly:
 
 ```bash
-# Terminal 1 — API
-pnpm --filter api dev
-
-# Terminal 2 — Admin
 pnpm --filter admin dev
 ```
 
@@ -185,9 +136,8 @@ pnpm --filter admin dev
 
 | Service         | URL                            |
 | --------------- | ------------------------------ |
-| Admin app       | http://localhost:3000          |
-| API             | http://localhost:3001          |
-| API docs        | http://localhost:3001/api/docs |
+| Admin app + API | http://localhost:3000          |
+| API docs        | http://localhost:3000/api/docs |
 | pgAdmin         | http://localhost:5050          |
 | Mailpit (inbox) | http://localhost:8025          |
 | PostgreSQL      | localhost:5432                 |
@@ -215,11 +165,10 @@ POSTGRES_DB=appdb
 PGADMIN_DEFAULT_EMAIL=admin@example.com
 PGADMIN_DEFAULT_PASSWORD=use_a_strong_password
 
-# Better Auth
-# BETTER_AUTH_SECRET must be at least 32 characters — generate with: openssl rand -base64 32
+# Better Auth — must be at least 32 characters
+# Generate with: openssl rand -base64 32
 BETTER_AUTH_SECRET=your_secret_here_min_32_characters
-BETTER_AUTH_URL=http://localhost:3001/api/auth
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3001/api/auth
+BETTER_AUTH_URL=http://localhost:3000/api/auth
 
 # CORS — comma-separated list of origins allowed to call the API
 ALLOWED_ORIGINS=http://localhost:3000
@@ -229,7 +178,7 @@ DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=use_a_strong_password
 DEFAULT_ADMIN_NAME=Super Admin
 
-# Frontend — used to construct links in emails (password reset, etc.)
+# Password reset callback
 RESET_PASSWORD_CALLBACK=https://yourdomain.com/auth/callback/reset-password
 
 # SMTP — replace with your real provider credentials in production
@@ -241,15 +190,13 @@ SMTP_PASSWORD=your_smtp_password
 SMTP_FROM=noreply@yourdomain.com
 ```
 
-> `BETTER_AUTH_SECRET` must be identical across all services. A mismatch will cause all session validation to fail.
-
 ### 2. Run the Deploy Script
 
 ```bash
 pnpm deploy:up
 ```
 
-The deploy script handles everything in order: building images, starting infrastructure, running migrations, seeding the admin user, and starting the API and web services.
+The deploy script handles everything in order: building images, starting infrastructure, running migrations, seeding the admin user, and starting the app.
 
 ---
 
@@ -266,7 +213,6 @@ The deploy script handles everything in order: building images, starting infrast
 | `pnpm deploy:down:volumes` | `./scripts/cleanup.sh --volumes`              | Stop containers and delete named volumes. **This wipes the database.** Use when you need a clean slate.                                            |
 | `pnpm deploy:down:images`  | `./scripts/cleanup.sh --images`               | Stop containers and remove built images. The next deploy will rebuild from scratch.                                                                |
 | `pnpm deploy:down:all`     | `./scripts/cleanup.sh --all`                  | Remove everything — containers, volumes, and images. Equivalent to a full reset.                                                                   |
-| `pnpm db:auth:migrate`     | `./scripts/auth-migrate.sh`                   | Start the database if needed, run migrations, and seed the admin user. Use this during local development setup.                                    |
 
 ---
 
@@ -276,22 +222,19 @@ The deploy script handles everything in order: building images, starting infrast
 The database container may not be ready yet. Wait a few seconds and retry, or check `docker compose ps` to confirm it is running.
 
 **`BETTER_AUTH_SECRET` mismatch**
-All auth errors after setup are likely caused by a mismatched `BETTER_AUTH_SECRET`. In local dev, ensure `apps/api/.env` and `apps/admin/.env` have the same value. In Docker, everything reads from `docker/.env` so a mismatch there will break all session validation.
+All auth errors after setup are likely caused by a mismatched `BETTER_AUTH_SECRET`. In local dev, ensure `apps/admin/.env` has a valid value. In Docker, everything reads from `docker/.env` so a mismatch there will break all session validation.
 
 **Port already in use**
-If port `3001` or `3000` is already occupied, update the `PORT` variable in the relevant `.env` file and restart the app.
+If port `3000` is already occupied, update the `PORT` variable in `apps/admin/.env` and restart the app.
 
 **pgAdmin login**
 Use the credentials defined under `PGADMIN_DEFAULT_EMAIL` and `PGADMIN_DEFAULT_PASSWORD` in your `.env`.
 
 **Emails not arriving in development**
-Make sure the Mailpit container is running (`docker compose ps`). All dev emails are captured at http://localhost:8025 — nothing is delivered to real inboxes. If the API starts before Mailpit is ready, restart the API.
+Make sure the Mailpit container is running (`docker compose ps`). All dev emails are captured at http://localhost:8025 — nothing is delivered to real inboxes.
 
 **Password reset link goes to an error page**
-Ensure `RESET_PASSWORD_CALLBACK` in `apps/api/.env` points to your frontend reset page (e.g. `http://localhost:3000/auth/callback/reset-password`). The value must be a full URL including protocol.
+Ensure `RESET_PASSWORD_CALLBACK` in `apps/admin/.env` points to your frontend reset page (e.g. `http://localhost:3000/auth/callback/reset-password`). The value must be a full URL including protocol.
 
 **Volume removal fails during cleanup**
 If `deploy:down:volumes` errors with "volume is in use", run `deploy:down` first to ensure all containers are fully stopped and removed before retrying.
-
-**Admin app environment variables not picked up**
-`VITE_*` variables are baked into the bundle at build time. After editing `apps/admin/.env`, you must restart the Vite dev server for the changes to take effect.
