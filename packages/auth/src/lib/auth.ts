@@ -1,13 +1,15 @@
-import { admin, openAPI } from "better-auth/plugins"
-import { betterAuth } from "better-auth"
-import { drizzleAdapter } from "better-auth/adapters/drizzle"
-import { tanstackStartCookies } from "better-auth/tanstack-start"
-import { mailer } from "../mailer.js"
-import * as authSchema from "../auth-schema.js"
-import db from "../db-conn.js"
+import { oauthProvider } from "@better-auth/oauth-provider";
+import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { admin, jwt, openAPI } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
+import * as authSchema from "../auth-schema.js";
+import db from "../db-conn.js";
+import { mailer } from "../mailer.js";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
+  disabledPaths: ["/token"],
   database: drizzleAdapter(db, {
     provider: "pg",
     usePlural: true,
@@ -28,7 +30,7 @@ export const auth = betterAuth({
     autoSignIn: true,
     requireEmailVerification: false,
     sendResetPassword: async ({ user, token }) => {
-      const callbackUrl = `${process.env.RESET_PASSWORD_CALLBACK}?token=${token}`
+      const callbackUrl = `${process.env.RESET_PASSWORD_CALLBACK}?token=${token}`;
 
       try {
         await mailer.sendMail({
@@ -41,15 +43,16 @@ export const auth = betterAuth({
           <p><a href="${callbackUrl}">Reset password</a></p>
           <p>If you did not request a password reset, you can safely ignore this email.</p>
         `,
-        })
+        });
       } catch (err) {
         // SMTP failures are logged server-side but not exposed to the client.
-        console.error("[Auth] Failed to send password reset email:", err)
+        console.error("[Auth] Failed to send password reset email:", err);
       }
     },
   },
 
-  trustedOrigins: process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],
+  trustedOrigins:
+    process.env.ALLOWED_ORIGINS?.split(",").map((o) => o.trim()) ?? [],
 
   advanced: {
     cookies: {
@@ -62,5 +65,19 @@ export const auth = betterAuth({
     },
   },
 
-  plugins: [openAPI(), admin(), tanstackStartCookies()],
-})
+  plugins: [
+    openAPI(),
+    admin(),
+    jwt(),
+    oauthProvider({
+      loginPage: "/sign-in",
+      consentPage: "/consent",
+      scopes: ["openid"],
+      silenceWarnings: {
+        oauthAuthServerConfig: true,
+        openidConfig: true,
+      },
+    }),
+    tanstackStartCookies(),
+  ],
+});

@@ -8,157 +8,169 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as protectedRouteRouteImport } from "./routes/(protected)/route";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as AuthSignInRouteImport } from "./routes/auth/sign-in";
-import { Route as protectedUsersIndexRouteImport } from "./routes/(protected)/users/index";
-import { Route as protectedSettingsIndexRouteImport } from "./routes/(protected)/settings/index";
-import { Route as protectedSessionsIndexRouteImport } from "./routes/(protected)/sessions/index";
-import { Route as protectedDashboardIndexRouteImport } from "./routes/(protected)/dashboard/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as protectedRouteRouteImport } from './routes/(protected)/route'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignInRouteImport } from './routes/auth/sign-in'
+import { Route as protectedUsersIndexRouteImport } from './routes/(protected)/users/index'
+import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
+import { Route as protectedSessionsIndexRouteImport } from './routes/(protected)/sessions/index'
+import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
 
 const protectedRouteRoute = protectedRouteRouteImport.update({
-  id: "/(protected)",
+  id: '/(protected)',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AuthSignInRoute = AuthSignInRouteImport.update({
-  id: "/auth/sign-in",
-  path: "/auth/sign-in",
+  id: '/auth/sign-in',
+  path: '/auth/sign-in',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const protectedUsersIndexRoute = protectedUsersIndexRouteImport.update({
-  id: "/users/",
-  path: "/users/",
+  id: '/users/',
+  path: '/users/',
   getParentRoute: () => protectedRouteRoute,
-} as any);
+} as any)
 const protectedSettingsIndexRoute = protectedSettingsIndexRouteImport.update({
-  id: "/settings/",
-  path: "/settings/",
+  id: '/settings/',
+  path: '/settings/',
   getParentRoute: () => protectedRouteRoute,
-} as any);
+} as any)
 const protectedSessionsIndexRoute = protectedSessionsIndexRouteImport.update({
-  id: "/sessions/",
-  path: "/sessions/",
+  id: '/sessions/',
+  path: '/sessions/',
   getParentRoute: () => protectedRouteRoute,
-} as any);
+} as any)
 const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
-  id: "/dashboard/",
-  path: "/dashboard/",
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => protectedRouteRoute,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/auth/sign-in": typeof AuthSignInRoute;
-  "/dashboard/": typeof protectedDashboardIndexRoute;
-  "/sessions/": typeof protectedSessionsIndexRoute;
-  "/settings/": typeof protectedSettingsIndexRoute;
-  "/users/": typeof protectedUsersIndexRoute;
+  '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/dashboard/': typeof protectedDashboardIndexRoute
+  '/sessions/': typeof protectedSessionsIndexRoute
+  '/settings/': typeof protectedSettingsIndexRoute
+  '/users/': typeof protectedUsersIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/auth/sign-in": typeof AuthSignInRoute;
-  "/dashboard": typeof protectedDashboardIndexRoute;
-  "/sessions": typeof protectedSessionsIndexRoute;
-  "/settings": typeof protectedSettingsIndexRoute;
-  "/users": typeof protectedUsersIndexRoute;
+  '/': typeof IndexRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/dashboard': typeof protectedDashboardIndexRoute
+  '/sessions': typeof protectedSessionsIndexRoute
+  '/settings': typeof protectedSettingsIndexRoute
+  '/users': typeof protectedUsersIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/(protected)": typeof protectedRouteRouteWithChildren;
-  "/auth/sign-in": typeof AuthSignInRoute;
-  "/(protected)/dashboard/": typeof protectedDashboardIndexRoute;
-  "/(protected)/sessions/": typeof protectedSessionsIndexRoute;
-  "/(protected)/settings/": typeof protectedSettingsIndexRoute;
-  "/(protected)/users/": typeof protectedUsersIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/(protected)': typeof protectedRouteRouteWithChildren
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
+  '/(protected)/sessions/': typeof protectedSessionsIndexRoute
+  '/(protected)/settings/': typeof protectedSettingsIndexRoute
+  '/(protected)/users/': typeof protectedUsersIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/" | "/auth/sign-in" | "/dashboard/" | "/sessions/" | "/settings/" | "/users/";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/" | "/auth/sign-in" | "/dashboard" | "/sessions" | "/settings" | "/users";
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/auth/sign-in'
+    | '/dashboard/'
+    | '/sessions/'
+    | '/settings/'
+    | '/users/'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/auth/sign-in'
+    | '/dashboard'
+    | '/sessions'
+    | '/settings'
+    | '/users'
   id:
-    | "__root__"
-    | "/"
-    | "/(protected)"
-    | "/auth/sign-in"
-    | "/(protected)/dashboard/"
-    | "/(protected)/sessions/"
-    | "/(protected)/settings/"
-    | "/(protected)/users/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/(protected)'
+    | '/auth/sign-in'
+    | '/(protected)/dashboard/'
+    | '/(protected)/sessions/'
+    | '/(protected)/settings/'
+    | '/(protected)/users/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  protectedRouteRoute: typeof protectedRouteRouteWithChildren;
-  AuthSignInRoute: typeof AuthSignInRoute;
+  IndexRoute: typeof IndexRoute
+  protectedRouteRoute: typeof protectedRouteRouteWithChildren
+  AuthSignInRoute: typeof AuthSignInRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/(protected)": {
-      id: "/(protected)";
-      path: "";
-      fullPath: "";
-      preLoaderRoute: typeof protectedRouteRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/auth/sign-in": {
-      id: "/auth/sign-in";
-      path: "/auth/sign-in";
-      fullPath: "/auth/sign-in";
-      preLoaderRoute: typeof AuthSignInRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/(protected)/users/": {
-      id: "/(protected)/users/";
-      path: "/users";
-      fullPath: "/users/";
-      preLoaderRoute: typeof protectedUsersIndexRouteImport;
-      parentRoute: typeof protectedRouteRoute;
-    };
-    "/(protected)/settings/": {
-      id: "/(protected)/settings/";
-      path: "/settings";
-      fullPath: "/settings/";
-      preLoaderRoute: typeof protectedSettingsIndexRouteImport;
-      parentRoute: typeof protectedRouteRoute;
-    };
-    "/(protected)/sessions/": {
-      id: "/(protected)/sessions/";
-      path: "/sessions";
-      fullPath: "/sessions/";
-      preLoaderRoute: typeof protectedSessionsIndexRouteImport;
-      parentRoute: typeof protectedRouteRoute;
-    };
-    "/(protected)/dashboard/": {
-      id: "/(protected)/dashboard/";
-      path: "/dashboard";
-      fullPath: "/dashboard/";
-      preLoaderRoute: typeof protectedDashboardIndexRouteImport;
-      parentRoute: typeof protectedRouteRoute;
-    };
+    '/(protected)': {
+      id: '/(protected)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof protectedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/auth/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(protected)/users/': {
+      id: '/(protected)/users/'
+      path: '/users'
+      fullPath: '/users/'
+      preLoaderRoute: typeof protectedUsersIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/settings/': {
+      id: '/(protected)/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof protectedSettingsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/sessions/': {
+      id: '/(protected)/sessions/'
+      path: '/sessions'
+      fullPath: '/sessions/'
+      preLoaderRoute: typeof protectedSessionsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
+    '/(protected)/dashboard/': {
+      id: '/(protected)/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof protectedDashboardIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
   }
 }
 
 interface protectedRouteRouteChildren {
-  protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute;
-  protectedSessionsIndexRoute: typeof protectedSessionsIndexRoute;
-  protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute;
-  protectedUsersIndexRoute: typeof protectedUsersIndexRoute;
+  protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
+  protectedSessionsIndexRoute: typeof protectedSessionsIndexRoute
+  protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute
+  protectedUsersIndexRoute: typeof protectedUsersIndexRoute
 }
 
 const protectedRouteRouteChildren: protectedRouteRouteChildren = {
@@ -166,22 +178,26 @@ const protectedRouteRouteChildren: protectedRouteRouteChildren = {
   protectedSessionsIndexRoute: protectedSessionsIndexRoute,
   protectedSettingsIndexRoute: protectedSettingsIndexRoute,
   protectedUsersIndexRoute: protectedUsersIndexRoute,
-};
+}
 
-const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(protectedRouteRouteChildren);
+const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(
+  protectedRouteRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   protectedRouteRoute: protectedRouteRouteWithChildren,
   AuthSignInRoute: AuthSignInRoute,
-};
-export const routeTree = rootRouteImport._addFileChildren(rootRouteChildren)._addFileTypes<FileRouteTypes>();
+}
+export const routeTree = rootRouteImport
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
-import type { getRouter } from "./router.tsx";
-import type { createStart } from "@tanstack/react-start";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }
