@@ -5,7 +5,7 @@ import {
 } from "@workspace/ui/components/Sidebar";
 import { AppNavBar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
-import { requireAuth } from "#/lib/auth-fns";
+import { requireAuth } from "#/server-fns/auth-fns";
 
 export const Route = createFileRoute("/(protected)")({
   beforeLoad: async ({ location }) =>

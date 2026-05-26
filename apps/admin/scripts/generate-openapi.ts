@@ -1,4 +1,5 @@
-import { app } from "../src/app.js"
+
+import { app } from "#/server/app"
 import { writeFileSync } from "fs"
 import { resolve } from "path"
 

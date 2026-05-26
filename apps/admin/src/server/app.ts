@@ -1,10 +1,11 @@
-import "dotenv/config";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import { auth } from "@workspace/auth/server";
 import { contextStorage } from "hono/context-storage";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
+import type { AppEnv } from "../utils/app-env.js";
+import { ErrorMessages } from "../utils/openapi.js";
 import { authSession } from "./middleware/auth-session.js";
 import { cors } from "./middleware/cors.js";
 import { errorHandler } from "./middleware/error-handler.js";
@@ -12,8 +13,6 @@ import { logger } from "./middleware/logger.js";
 import { rateLimiter } from "./middleware/rate-limiter.js";
 import { discoveryHandler } from "./routes/discovery.js";
 import { healthcheckHandler } from "./routes/healthcheck.js";
-import type { AppEnv } from "./types/app-env.js";
-import { ErrorMessages } from "./utils/openapi.js";
 
 export const app = new OpenAPIHono<AppEnv>().basePath("/api");
 

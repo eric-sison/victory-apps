@@ -1,6 +1,6 @@
-import { env } from "../utils/env.js"
-import { structuredLogger } from "@hono/structured-logger"
-import pino from "pino"
+import { structuredLogger } from "@hono/structured-logger";
+import pino from "pino";
+import { env } from "../../utils/env.js";
 
 const rootLogger = pino({
   ...(env.NODE_ENV === "development" && {
@@ -15,10 +15,10 @@ const rootLogger = pino({
       },
     },
   }),
-})
+});
 
 export const logger = () => {
   return structuredLogger({
     createLogger: (c) => rootLogger.child({ requestId: c.var.requestId }),
-  })
-}
+  });
+};

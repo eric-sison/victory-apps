@@ -1,7 +1,12 @@
-import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import { HealthCheckResponseSchema } from "../contracts/healthcheck.js";
-import type { AppEnv } from "../types/app-env.js";
-import { commonErrors, jsonResponse } from "../utils/openapi.js";
+import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import type { AppEnv } from "../../utils/app-env.js";
+import { commonErrors, jsonResponse } from "../../utils/openapi.js";
+
+export const HealthCheckResponseSchema = z.object({
+  status: z.number(),
+  message: z.string(),
+  code: z.string(),
+});
 
 const healthCheckRoute = createRoute({
   method: "get",

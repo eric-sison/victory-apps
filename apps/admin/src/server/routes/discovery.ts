@@ -4,7 +4,7 @@ import {
   oauthProviderOpenIdConfigMetadata,
 } from "@workspace/auth";
 import { auth } from "@workspace/auth/server";
-import type { AppEnv } from "../types/app-env.js";
+import type { AppEnv } from "../../utils/app-env.js";
 
 export const discoveryHandler = new OpenAPIHono<AppEnv>()
   .get("/.well-known/openid-configuration", (c) =>

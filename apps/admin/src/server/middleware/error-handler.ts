@@ -3,9 +3,9 @@ import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { ZodError, z } from "zod";
-import type { AppEnv } from "../types/app-env.js";
-import { env } from "../utils/env.js";
-import { ErrorMessages } from "../utils/openapi.js";
+import type { AppEnv } from "../../utils/app-env.js";
+import { env } from "../../utils/env.js";
+import { ErrorMessages } from "../../utils/openapi.js";
 
 export const errorHandler = (err: Error, c: Context<AppEnv>) => {
   const logger = c.var.logger;

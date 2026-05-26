@@ -1,7 +1,7 @@
 import { createFileRoute, useSearch } from "@tanstack/react-router";
 import z from "zod";
 import { CredentialsSignInForm } from "#/components/features/auth/CredentialsSignInForm";
-import { requireNoAuth } from "#/lib/auth-fns";
+import { requireNoAuth } from "#/server-fns/auth-fns";
 
 export const Route = createFileRoute("/auth/sign-in")({
   beforeLoad: async () => await requireNoAuth(),
