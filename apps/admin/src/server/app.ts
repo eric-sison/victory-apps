@@ -1,9 +1,9 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
-import { auth } from "@workspace/auth/server";
 import { contextStorage } from "hono/context-storage";
 import { requestId } from "hono/request-id";
 import { secureHeaders } from "hono/secure-headers";
+import { auth } from "#/lib/auth.js";
 import type { AppEnv } from "../utils/app-env.js";
 import { ErrorMessages } from "../utils/openapi.js";
 import { authSession } from "./middleware/auth-session.js";

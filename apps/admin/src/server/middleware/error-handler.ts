@@ -1,4 +1,4 @@
-import { APIError } from "@workspace/auth";
+import { APIError } from "better-auth";
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";

@@ -12,7 +12,6 @@
     "deploy:down:volumes": "./scripts/cleanup.sh --volumes",
     "deploy:down:images": "./scripts/cleanup.sh --images",
     "deploy:down:all": "./scripts/cleanup.sh --all",
-    "db:auth:migrate": "./scripts/auth-migrate.sh",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
