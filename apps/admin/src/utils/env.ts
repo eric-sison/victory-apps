@@ -13,6 +13,11 @@ const envSchema = z.object({
     .transform((s) => s.split(",").map((o) => o.trim()))
     .pipe(z.array(z.url())),
 
+  // Default user
+  DEFAULT_ADMIN_EMAIL: z.email(),
+  DEFAULT_ADMIN_PASSWORD: z.string().min(8),
+  DEFAULT_ADMIN_NAME: z.string().optional(),
+
   // SMTP — dev: points to Mailpit; prod: real SMTP provider
   SMTP_HOST: z.string().min(1),
   SMTP_PORT: z.coerce.number().min(1).max(65535).default(1025),
