@@ -1,8 +1,11 @@
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "@workspace/ui/components/Sidebar";
 import { AppNavBar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
-import { requireAuth } from "#/lib/auth-fns";
-import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { SidebarInset, SidebarProvider } from "@workspace/ui/components/Sidebar";
+import { requireAuth } from "#/server-fns/auth-fns";
 
 export const Route = createFileRoute("/(protected)")({
   beforeLoad: async ({ location }) =>

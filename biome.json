@@ -12,13 +12,15 @@
       "**/.vscode/**/*",
       "**/index.html",
       "**/vite.config.ts",
+
+      "!**/src/database/migrations/meta/*",
       "!**/src/routeTree.gen.ts",
       "!**/src/styles.css"
     ]
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "tab"
+    "indentStyle": "space"
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
@@ -30,6 +32,11 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double"
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }

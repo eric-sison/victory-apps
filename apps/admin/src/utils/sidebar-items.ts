@@ -1,9 +1,9 @@
 import type { LinkProps } from "@tanstack/react-router";
 import {
-  type LucideIcon,
   CircleGauge,
   KeyRound,
   LayoutGrid,
+  type LucideIcon,
   PackagePlus,
   Settings,
   ShieldOff,

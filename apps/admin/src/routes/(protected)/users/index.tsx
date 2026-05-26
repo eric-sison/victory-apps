@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Page } from "#/components/Page";
 import { Button } from "@workspace/ui/components/Button";
+import { Page } from "@workspace/ui/components/Page";
 import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/(protected)/users/")({

@@ -1,0 +1,101 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Victory API",
+    "version": "1.0.0"
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "message"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/api/healthcheck": {
+      "get": {
+        "tags": [
+          "Health Check"
+        ],
+        "description": "Returns the API status to confirm the service is up and reachable.",
+        "responses": {
+          "200": {
+            "description": "Service is healthy and running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "number"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "code": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "status",
+                    "message",
+                    "code"
+                  ]
+                },
+                "example": {
+                  "status": 200,
+                  "message": "Service is healthy and running.",
+                  "code": "OK"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited. Too many requests, try again later.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 429,
+                  "message": "Rate limited. Too many requests, try again later."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error. Something went wrong.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": 500,
+                  "message": "Internal server error. Something went wrong."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

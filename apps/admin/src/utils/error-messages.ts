@@ -2,7 +2,8 @@ export const ErrorMessages = {
   400: {
     INVALID_REQUEST: {
       full: "We couldn't process your request. Some information may be missing or incorrect. Please review your input and try again.",
-      short: "We couldn't process your request. Please check your input and try again.",
+      short:
+        "We couldn't process your request. Please check your input and try again.",
     },
   },
 
@@ -42,7 +43,8 @@ export const ErrorMessages = {
   422: {
     VALIDATION_FAILED: {
       full: "Some of the information provided isn't valid. Please check your input and correct any errors.",
-      short: "Some information provided is invalid. Please review and try again.",
+      short:
+        "Some information provided is invalid. Please review and try again.",
     },
   },
 

@@ -1,4 +1,17 @@
-import { Fragment, type FunctionComponent } from "react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import type { auth } from "@workspace/auth/server";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@workspace/ui/components/Collapsible";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/DropdownMenu";
 import {
   Sidebar,
   SidebarContent,
@@ -16,18 +29,12 @@ import {
   SidebarRail,
   useSidebar,
 } from "@workspace/ui/components/Sidebar";
-import { SIDEBAR_FOOTER_ITEMS, SIDEBAR_CONTENT_ITEMS as sidebarItems } from "#/utils/sidebar-items";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/Collapsible";
 import { ChevronRight } from "lucide-react";
+import { Fragment, type FunctionComponent } from "react";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/DropdownMenu";
-import { Link, useLocation, useNavigate } from "@tanstack/react-router";
-import type { auth } from "@workspace/auth/server";
+  SIDEBAR_FOOTER_ITEMS,
+  SIDEBAR_CONTENT_ITEMS as sidebarItems,
+} from "#/utils/sidebar-items";
 
 type AppSidebarProps = {
   user: typeof auth.$Infer.Session.user;
@@ -67,7 +74,9 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">Victory</span>
-                <span className="truncate text-xs font-medium text-muted-foreground">Admin App</span>
+                <span className="truncate text-xs font-medium text-muted-foreground">
+                  Admin App
+                </span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -90,7 +99,9 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                       <Collapsible
                         key={item.id}
                         className="group/collapsible"
-                        defaultOpen={item.subItems.some((sub) => sub.path === pathname)}
+                        defaultOpen={item.subItems.some(
+                          (sub) => sub.path === pathname,
+                        )}
                         render={
                           <SidebarMenuItem>
                             <CollapsibleTrigger
@@ -143,7 +154,11 @@ export const AppSidebar: FunctionComponent<AppSidebarProps> = ({ user }) => {
                               const isLast = index === item.subItems.length - 1;
                               return (
                                 <Fragment key={subItem.id}>
-                                  <DropdownMenuItem onClick={() => navigate({ to: subItem.path })}>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      navigate({ to: subItem.path })
+                                    }
+                                  >
                                     {subItem.icon && <subItem.icon />}
                                     <span>{subItem.title}</span>
                                   </DropdownMenuItem>

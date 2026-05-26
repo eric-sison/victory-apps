@@ -1,12 +1,16 @@
-import type { QueryClient } from "@tanstack/react-query";
-import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
+import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Toaster } from "@workspace/ui/components/Sonner";
-import { themeScript } from "#/utils/theme";
 import appCss from "@workspace/ui/globals.css?url";
+import { themeScript } from "#/utils/theme";
 
 type MyRouterContext = {
   queryClient: QueryClient;
@@ -53,7 +57,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           eventBusConfig={{ debug: false }}
           config={{ position: "bottom-right" }}
           plugins={[
-            { name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> },
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
             { name: "Tanstack Query", render: <ReactQueryDevtoolsPanel /> },
             formDevtoolsPlugin(),
           ]}
