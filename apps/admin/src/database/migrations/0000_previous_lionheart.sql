@@ -13,7 +13,7 @@ CREATE TABLE "accounts" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL
 );
---> statement-breakpoint
+--> statement-breakpoints
 CREATE TABLE "jwkss" (
 	"id" text PRIMARY KEY NOT NULL,
 	"public_key" text NOT NULL,
