@@ -1,4 +1,3 @@
-import type { auth } from "@workspace/auth/server";
 import {
   Avatar,
   AvatarFallback,
@@ -6,6 +5,7 @@ import {
 } from "@workspace/ui/components/Avatar";
 import { cn } from "@workspace/ui/lib/utils";
 import { type FunctionComponent, useEffect, useState } from "react";
+import type { auth } from "#/lib/auth";
 
 type AppNavBarProps = {
   user: typeof auth.$Infer.Session.user;

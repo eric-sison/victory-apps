@@ -1,9 +1,6 @@
 import { createFileRoute, useLocation } from "@tanstack/react-router";
-import { Plus } from "@workspace/ui";
-import { Button } from "@workspace/ui/components/Button";
 import {
   Page,
-  PageAction,
   PageBreadcrumb,
   PageContent,
   PageDescription,
@@ -12,7 +9,7 @@ import {
 } from "@workspace/ui/components/Page";
 import { iconMap } from "#/utils/route-icons";
 
-export const Route = createFileRoute("/(protected)/users/")({
+export const Route = createFileRoute("/(protected)/apps/")({
   component: RouteComponent,
 });
 
@@ -23,16 +20,10 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} icons={iconMap} />
       <PageHeader>
-        <PageTitle>User Management</PageTitle>
+        <PageTitle>Apps</PageTitle>
         <PageDescription>
-          Manage user accounts, roles, and access permissions.
+          Manage connected applications and their access permissions.
         </PageDescription>
-        <PageAction>
-          <Button>
-            <Plus />
-            <span>Add Users</span>
-          </Button>
-        </PageAction>
       </PageHeader>
 
       <PageContent className="text-justify"></PageContent>

@@ -3,7 +3,6 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@workspace/ui/components/Sidebar";
-import { AppNavBar } from "#/components/AppNavbar";
 import { AppSidebar } from "#/components/AppSidebar";
 import { requireAuth } from "#/server-fns/auth-fns";
 
@@ -21,10 +20,9 @@ function RouteComponent() {
   const { user } = Route.useRouteContext();
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="p-4">
       <AppSidebar user={user} />
-      <SidebarInset>
-        <AppNavBar user={user} />
+      <SidebarInset className="rounded-lg">
         <main className="flex-1">
           <Outlet />
         </main>

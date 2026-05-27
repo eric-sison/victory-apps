@@ -50,7 +50,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {/* biome-ignore lint/security/noDangerouslySetInnerHtml: required for SSR theme initialization */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="h-full overflow-x-hidden">
+      <body className="h-full overflow-x-hidden bg-secondary/50 dark:bg-background">
         {children}
         <Toaster />
         <TanStackDevtools

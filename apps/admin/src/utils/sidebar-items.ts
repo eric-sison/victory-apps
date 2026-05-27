@@ -4,12 +4,9 @@ import {
   KeyRound,
   LayoutGrid,
   type LucideIcon,
-  PackagePlus,
   Settings,
-  ShieldOff,
-  UserCog,
   Users,
-} from "lucide-react";
+} from "@workspace/ui";
 
 type AppPath = LinkProps["to"];
 
@@ -46,7 +43,7 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
       {
         id: "general-apps",
         title: "Apps",
-        path: "/",
+        path: "/apps",
         icon: LayoutGrid,
         subItems: [],
       },
@@ -58,13 +55,6 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
         subItems: [],
       },
       {
-        id: "general-roles-permissions",
-        title: "Roles & Permissions",
-        path: "/",
-        icon: ShieldOff,
-        subItems: [],
-      },
-      {
         id: "general-sessions",
         title: "Sessions",
         path: "/sessions",
@@ -72,24 +62,10 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
         subItems: [],
       },
       {
-        id: "general-profile",
-        title: "Profile",
-        path: "/",
-        icon: UserCog,
-        subItems: [],
-      },
-      {
         id: "general-settings",
         title: "Settings",
         path: "/settings",
         icon: Settings,
-        subItems: [],
-      },
-      {
-        id: "general-integrations",
-        title: "Integrations",
-        path: "/",
-        icon: PackagePlus,
         subItems: [],
       },
     ],
