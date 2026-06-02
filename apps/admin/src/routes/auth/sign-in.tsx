@@ -1,7 +1,24 @@
-import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { createFileRoute, redirect, useSearch } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import z from "zod";
 import { CredentialsSignInForm } from "#/components/features/auth/CredentialsSignInForm";
-import { requireNoAuth } from "#/server-fns/auth-fns";
+import { auth } from "#/lib/auth";
+
+export const requireNoAuth = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const headers = getRequestHeaders();
+    const session = await auth.api.getSession({
+      headers,
+    });
+
+    if (session) {
+      throw redirect({
+        to: "/dashboard",
+      });
+    }
+  },
+);
 
 export const Route = createFileRoute("/auth/sign-in")({
   beforeLoad: async () => await requireNoAuth(),

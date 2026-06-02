@@ -1,4 +1,5 @@
 import { createFileRoute, useLocation } from "@tanstack/react-router";
+import { Button } from "@workspace/ui/components/Button";
 import {
   Page,
   PageBreadcrumb,
@@ -7,6 +8,7 @@ import {
   PageHeader,
   PageTitle,
 } from "@workspace/ui/components/Page";
+import { authClient } from "#/lib/auth-client";
 import { iconMap } from "#/utils/route-icons";
 
 export const Route = createFileRoute("/(protected)/apps/")({
@@ -15,6 +17,16 @@ export const Route = createFileRoute("/(protected)/apps/")({
 
 function RouteComponent() {
   const { pathname } = useLocation();
+
+  const handleCreateClient = async () => {
+    await authClient.oauth2.register({
+      redirect_uris: ["http://localhost:5960/oidc/callback"],
+      token_endpoint_auth_method: "client_secret_basic",
+      grant_types: ["authorization_code"],
+      response_types: ["code"],
+      client_name: "Selah",
+    });
+  };
 
   return (
     <Page>
@@ -26,7 +38,9 @@ function RouteComponent() {
         </PageDescription>
       </PageHeader>
 
-      <PageContent className="text-justify"></PageContent>
+      <PageContent className="text-justify">
+        <Button onClick={handleCreateClient}>Create App</Button>
+      </PageContent>
     </Page>
   );
 }

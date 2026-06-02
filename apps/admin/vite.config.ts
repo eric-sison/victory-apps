@@ -7,10 +7,20 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
 
 const config = defineConfig({
-  resolve: { tsconfigPaths: true },
+  resolve: {
+    tsconfigPaths: true,
+    dedupe: ["react", "react-dom"],
+  },
   plugins: [
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    // nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({
+      config: {
+        rollupConfig: {
+          external: [/^@sentry\//],
+        },
+      },
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),

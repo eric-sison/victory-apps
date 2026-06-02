@@ -1,10 +1,35 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createServerFn } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
 import {
   SidebarInset,
   SidebarProvider,
 } from "@workspace/ui/components/Sidebar";
+import z from "zod";
 import { AppSidebar } from "#/components/AppSidebar";
-import { requireAuth } from "#/server-fns/auth-fns";
+import { auth } from "#/lib/auth";
+
+export const requireAuth = createServerFn({ method: "GET" })
+  .inputValidator(
+    z.object({
+      redirectTo: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const headers = getRequestHeaders();
+    const session = await auth.api.getSession({
+      headers,
+    });
+
+    if (!session) {
+      throw redirect({
+        to: "/auth/sign-in",
+        search: { redirectTo: data.redirectTo },
+      });
+    }
+
+    return session;
+  });
 
 export const Route = createFileRoute("/(protected)")({
   beforeLoad: async ({ location }) =>

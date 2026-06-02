@@ -24,6 +24,10 @@ export const ErrorMessages = {
       full: "You don't have permission to perform this action.",
       short: "You don’t have access to perform this action.",
     },
+    EMAIL_NOT_VERIFIED: {
+      full: "Your email address has not been verified. Please check your inbox for a verification link.",
+      short: "Verify your email address to continue.",
+    },
   },
 
   404: {
