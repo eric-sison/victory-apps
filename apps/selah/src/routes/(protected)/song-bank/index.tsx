@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/Button";
-import { Page } from "@workspace/ui/components/Page";
+import {
+  Page,
+  PageAction,
+  PageContent,
+  PageDescription,
+  PageFooter,
+  PageHeader,
+  PageTitle,
+} from "@workspace/ui/components/Page";
 import { Plus } from "lucide-react";
 import { MusicPlayer } from "#/components/MusicPlayer";
 import { SONG_SECTIONS, SongList } from "#/components/Songlist";
@@ -12,27 +20,27 @@ export const Route = createFileRoute("/(protected)/song-bank/")({
 function RouteComponent() {
   return (
     <Page>
-      <Page.Header>
-        <Page.Title>Song Bank</Page.Title>
-        <Page.Description>
+      <PageHeader>
+        <PageTitle>Song Bank</PageTitle>
+        <PageDescription>
           Your central library of songs for workship.
-        </Page.Description>
+        </PageDescription>
 
-        <Page.Action>
+        <PageAction>
           <Button>
             <Plus />
             <span>New Song</span>
           </Button>
-        </Page.Action>
-      </Page.Header>
+        </PageAction>
+      </PageHeader>
 
-      <Page.Content>
+      <PageContent>
         <SongList sections={SONG_SECTIONS} currentSongId="1" />
-      </Page.Content>
+      </PageContent>
 
-      <Page.Footer className="p-0">
+      <PageFooter className="p-0">
         <MusicPlayer />
-      </Page.Footer>
+      </PageFooter>
     </Page>
   );
 }

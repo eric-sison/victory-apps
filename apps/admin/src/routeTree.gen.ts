@@ -17,6 +17,7 @@ import { Route as protectedUsersIndexRouteImport } from './routes/(protected)/us
 import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
 import { Route as protectedSessionsIndexRouteImport } from './routes/(protected)/sessions/index'
 import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
+import { Route as protectedAppsIndexRouteImport } from './routes/(protected)/apps/index'
 
 const protectedRouteRoute = protectedRouteRouteImport.update({
   id: '/(protected)',
@@ -57,11 +58,17 @@ const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => protectedRouteRoute,
 } as any)
+const protectedAppsIndexRoute = protectedAppsIndexRouteImport.update({
+  id: '/apps/',
+  path: '/apps/',
+  getParentRoute: () => protectedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/apps/': typeof protectedAppsIndexRoute
   '/dashboard/': typeof protectedDashboardIndexRoute
   '/sessions/': typeof protectedSessionsIndexRoute
   '/settings/': typeof protectedSettingsIndexRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/apps': typeof protectedAppsIndexRoute
   '/dashboard': typeof protectedDashboardIndexRoute
   '/sessions': typeof protectedSessionsIndexRoute
   '/settings': typeof protectedSettingsIndexRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/(protected)': typeof protectedRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/(protected)/apps/': typeof protectedAppsIndexRoute
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/sessions/': typeof protectedSessionsIndexRoute
   '/(protected)/settings/': typeof protectedSettingsIndexRoute
@@ -93,6 +102,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/auth/sign-in'
+    | '/apps/'
     | '/dashboard/'
     | '/sessions/'
     | '/settings/'
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/auth/sign-in'
+    | '/apps'
     | '/dashboard'
     | '/sessions'
     | '/settings'
@@ -112,6 +123,7 @@ export interface FileRouteTypes {
     | '/(protected)'
     | '/api/$'
     | '/auth/sign-in'
+    | '/(protected)/apps/'
     | '/(protected)/dashboard/'
     | '/(protected)/sessions/'
     | '/(protected)/settings/'
@@ -183,10 +195,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedDashboardIndexRouteImport
       parentRoute: typeof protectedRouteRoute
     }
+    '/(protected)/apps/': {
+      id: '/(protected)/apps/'
+      path: '/apps'
+      fullPath: '/apps/'
+      preLoaderRoute: typeof protectedAppsIndexRouteImport
+      parentRoute: typeof protectedRouteRoute
+    }
   }
 }
 
 interface protectedRouteRouteChildren {
+  protectedAppsIndexRoute: typeof protectedAppsIndexRoute
   protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
   protectedSessionsIndexRoute: typeof protectedSessionsIndexRoute
   protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute
@@ -194,6 +214,7 @@ interface protectedRouteRouteChildren {
 }
 
 const protectedRouteRouteChildren: protectedRouteRouteChildren = {
+  protectedAppsIndexRoute: protectedAppsIndexRoute,
   protectedDashboardIndexRoute: protectedDashboardIndexRoute,
   protectedSessionsIndexRoute: protectedSessionsIndexRoute,
   protectedSettingsIndexRoute: protectedSettingsIndexRoute,

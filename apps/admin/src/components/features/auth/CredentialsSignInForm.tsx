@@ -65,6 +65,10 @@ export const CredentialsSignInForm: FunctionComponent<
                 errorMessage = ErrorMessages[401].INVALID_CREDENTIALS.short;
                 break;
               }
+              case 403: {
+                errorMessage = ErrorMessages[403].EMAIL_NOT_VERIFIED.short;
+                break;
+              }
               case 404: {
                 errorMessage = ErrorMessages[404].RESOURCE_NOT_FOUND.short;
                 break;

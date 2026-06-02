@@ -1,6 +1,6 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
-import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { betterAuth } from "better-auth/minimal";
 import { admin, jwt, openAPI } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import db from "../database/conn.js";
@@ -28,7 +28,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
-    requireEmailVerification: false,
+    requireEmailVerification: true,
     sendResetPassword: async ({ user, token }) => {
       const callbackUrl = `${process.env.RESET_PASSWORD_CALLBACK}?token=${token}`;
 
@@ -70,6 +70,7 @@ export const auth = betterAuth({
     admin(),
     jwt(),
     oauthProvider({
+      allowDynamicClientRegistration: true,
       loginPage: "/sign-in",
       consentPage: "/consent",
       scopes: ["openid"],
