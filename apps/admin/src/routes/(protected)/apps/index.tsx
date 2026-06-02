@@ -18,14 +18,21 @@ export const Route = createFileRoute("/(protected)/apps/")({
 function RouteComponent() {
   const { pathname } = useLocation();
 
+  // TODO: Refine. Temporary only
+  // Make sure to pass the enable_end_session: true flag to enable client sign out
+  // But this flag can only be set when creating a client app on the server-side
   const handleCreateClient = async () => {
-    await authClient.oauth2.register({
-      redirect_uris: ["http://localhost:5960/oidc/callback"],
+    const app = await authClient.oauth2.register({
+      redirect_uris: ["http://localhost:5860/callback"],
+      post_logout_redirect_uris: ["http://localhost:5860"],
       token_endpoint_auth_method: "client_secret_basic",
       grant_types: ["authorization_code"],
       response_types: ["code"],
+      scope: "openid profile email offline_access",
       client_name: "Selah",
     });
+
+    console.log(app);
   };
 
   return (

@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
 import { admin, jwt, openAPI } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { env } from "#/utils/env.js";
 import db from "../database/conn.js";
 import * as authSchema from "../database/schemas/auth-schema.js";
 import { mailer } from "./mailer.js";
@@ -20,7 +21,7 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
     cookieCache: {
-      enabled: true,
+      enabled: env.NODE_ENV !== "development",
       maxAge: 5 * 60, // 5 mins
     },
   },
@@ -71,9 +72,10 @@ export const auth = betterAuth({
     jwt(),
     oauthProvider({
       allowDynamicClientRegistration: true,
-      loginPage: "/sign-in",
-      consentPage: "/consent",
-      scopes: ["openid"],
+      storeClientSecret: "hashed",
+      loginPage: "/auth/oidc/sign-in",
+      consentPage: "/auth/oidc/consent",
+      scopes: ["openid", "email", "offline_access", "profile"],
       silenceWarnings: {
         oauthAuthServerConfig: true,
         openidConfig: true,

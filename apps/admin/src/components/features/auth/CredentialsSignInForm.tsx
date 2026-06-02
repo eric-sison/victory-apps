@@ -26,6 +26,7 @@ import { ErrorMessages } from "#/utils/error-messages";
 
 type CredentialsSignInFormProps = {
   callbackURL?: string;
+  signInType?: "credentials" | "oidc";
 };
 
 const CredentialsSignInFormSchema = z.object({
@@ -37,7 +38,7 @@ const CredentialsSignInFormSchema = z.object({
 
 export const CredentialsSignInForm: FunctionComponent<
   CredentialsSignInFormProps
-> = ({ callbackURL }) => {
+> = ({ callbackURL, signInType = "credentials" }) => {
   const form = useForm({
     validators: {
       onSubmit: CredentialsSignInFormSchema,
@@ -57,6 +58,9 @@ export const CredentialsSignInForm: FunctionComponent<
         callbackURL: callbackURL ?? "/dashboard",
         rememberMe: true, // TODO: add control here
         fetchOptions: {
+          async onSuccess() {
+            signInType === "oidc" && (await authClient.oauth2.continue());
+          },
           onError(ctx) {
             let errorMessage = "";
 

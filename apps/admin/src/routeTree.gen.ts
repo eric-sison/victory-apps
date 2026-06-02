@@ -18,6 +18,9 @@ import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)
 import { Route as protectedSessionsIndexRouteImport } from './routes/(protected)/sessions/index'
 import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
 import { Route as protectedAppsIndexRouteImport } from './routes/(protected)/apps/index'
+import { Route as AuthOidcSignOutRouteImport } from './routes/auth/oidc/sign-out'
+import { Route as AuthOidcSignInRouteImport } from './routes/auth/oidc/sign-in'
+import { Route as AuthOidcConsentRouteImport } from './routes/auth/oidc/consent'
 
 const protectedRouteRoute = protectedRouteRouteImport.update({
   id: '/(protected)',
@@ -63,11 +66,29 @@ const protectedAppsIndexRoute = protectedAppsIndexRouteImport.update({
   path: '/apps/',
   getParentRoute: () => protectedRouteRoute,
 } as any)
+const AuthOidcSignOutRoute = AuthOidcSignOutRouteImport.update({
+  id: '/auth/oidc/sign-out',
+  path: '/auth/oidc/sign-out',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOidcSignInRoute = AuthOidcSignInRouteImport.update({
+  id: '/auth/oidc/sign-in',
+  path: '/auth/oidc/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthOidcConsentRoute = AuthOidcConsentRouteImport.update({
+  id: '/auth/oidc/consent',
+  path: '/auth/oidc/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/oidc/consent': typeof AuthOidcConsentRoute
+  '/auth/oidc/sign-in': typeof AuthOidcSignInRoute
+  '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/apps/': typeof protectedAppsIndexRoute
   '/dashboard/': typeof protectedDashboardIndexRoute
   '/sessions/': typeof protectedSessionsIndexRoute
@@ -78,6 +99,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/oidc/consent': typeof AuthOidcConsentRoute
+  '/auth/oidc/sign-in': typeof AuthOidcSignInRoute
+  '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/apps': typeof protectedAppsIndexRoute
   '/dashboard': typeof protectedDashboardIndexRoute
   '/sessions': typeof protectedSessionsIndexRoute
@@ -90,6 +114,9 @@ export interface FileRoutesById {
   '/(protected)': typeof protectedRouteRouteWithChildren
   '/api/$': typeof ApiSplatRoute
   '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/oidc/consent': typeof AuthOidcConsentRoute
+  '/auth/oidc/sign-in': typeof AuthOidcSignInRoute
+  '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/(protected)/apps/': typeof protectedAppsIndexRoute
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/sessions/': typeof protectedSessionsIndexRoute
@@ -102,6 +129,9 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/auth/sign-in'
+    | '/auth/oidc/consent'
+    | '/auth/oidc/sign-in'
+    | '/auth/oidc/sign-out'
     | '/apps/'
     | '/dashboard/'
     | '/sessions/'
@@ -112,6 +142,9 @@ export interface FileRouteTypes {
     | '/'
     | '/api/$'
     | '/auth/sign-in'
+    | '/auth/oidc/consent'
+    | '/auth/oidc/sign-in'
+    | '/auth/oidc/sign-out'
     | '/apps'
     | '/dashboard'
     | '/sessions'
@@ -123,6 +156,9 @@ export interface FileRouteTypes {
     | '/(protected)'
     | '/api/$'
     | '/auth/sign-in'
+    | '/auth/oidc/consent'
+    | '/auth/oidc/sign-in'
+    | '/auth/oidc/sign-out'
     | '/(protected)/apps/'
     | '/(protected)/dashboard/'
     | '/(protected)/sessions/'
@@ -135,6 +171,9 @@ export interface RootRouteChildren {
   protectedRouteRoute: typeof protectedRouteRouteWithChildren
   ApiSplatRoute: typeof ApiSplatRoute
   AuthSignInRoute: typeof AuthSignInRoute
+  AuthOidcConsentRoute: typeof AuthOidcConsentRoute
+  AuthOidcSignInRoute: typeof AuthOidcSignInRoute
+  AuthOidcSignOutRoute: typeof AuthOidcSignOutRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -202,6 +241,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedAppsIndexRouteImport
       parentRoute: typeof protectedRouteRoute
     }
+    '/auth/oidc/sign-out': {
+      id: '/auth/oidc/sign-out'
+      path: '/auth/oidc/sign-out'
+      fullPath: '/auth/oidc/sign-out'
+      preLoaderRoute: typeof AuthOidcSignOutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/oidc/sign-in': {
+      id: '/auth/oidc/sign-in'
+      path: '/auth/oidc/sign-in'
+      fullPath: '/auth/oidc/sign-in'
+      preLoaderRoute: typeof AuthOidcSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/oidc/consent': {
+      id: '/auth/oidc/consent'
+      path: '/auth/oidc/consent'
+      fullPath: '/auth/oidc/consent'
+      preLoaderRoute: typeof AuthOidcConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -230,6 +290,9 @@ const rootRouteChildren: RootRouteChildren = {
   protectedRouteRoute: protectedRouteRouteWithChildren,
   ApiSplatRoute: ApiSplatRoute,
   AuthSignInRoute: AuthSignInRoute,
+  AuthOidcConsentRoute: AuthOidcConsentRoute,
+  AuthOidcSignInRoute: AuthOidcSignInRoute,
+  AuthOidcSignOutRoute: AuthOidcSignOutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

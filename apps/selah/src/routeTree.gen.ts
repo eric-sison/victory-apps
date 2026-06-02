@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as protectedRouteRouteImport } from './routes/(protected)/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as oidcCallbackRouteImport } from './routes/(oidc)/callback'
 import { Route as protectedTeamsIndexRouteImport } from './routes/(protected)/teams/index'
 import { Route as protectedSongBankIndexRouteImport } from './routes/(protected)/song-bank/index'
 import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
@@ -25,6 +26,11 @@ const protectedRouteRoute = protectedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const oidcCallbackRoute = oidcCallbackRouteImport.update({
+  id: '/(oidc)/callback',
+  path: '/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const protectedTeamsIndexRoute = protectedTeamsIndexRouteImport.update({
@@ -60,6 +66,7 @@ const protectedCalendarIndexRoute = protectedCalendarIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/callback': typeof oidcCallbackRoute
   '/calendar/': typeof protectedCalendarIndexRoute
   '/dashboard/': typeof protectedDashboardIndexRoute
   '/services/': typeof protectedServicesIndexRoute
@@ -69,6 +76,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/callback': typeof oidcCallbackRoute
   '/calendar': typeof protectedCalendarIndexRoute
   '/dashboard': typeof protectedDashboardIndexRoute
   '/services': typeof protectedServicesIndexRoute
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(protected)': typeof protectedRouteRouteWithChildren
+  '/(oidc)/callback': typeof oidcCallbackRoute
   '/(protected)/calendar/': typeof protectedCalendarIndexRoute
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/services/': typeof protectedServicesIndexRoute
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/callback'
     | '/calendar/'
     | '/dashboard/'
     | '/services/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/callback'
     | '/calendar'
     | '/dashboard'
     | '/services'
@@ -110,6 +121,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/(protected)'
+    | '/(oidc)/callback'
     | '/(protected)/calendar/'
     | '/(protected)/dashboard/'
     | '/(protected)/services/'
@@ -121,6 +133,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   protectedRouteRoute: typeof protectedRouteRouteWithChildren
+  oidcCallbackRoute: typeof oidcCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -137,6 +150,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(oidc)/callback': {
+      id: '/(oidc)/callback'
+      path: '/callback'
+      fullPath: '/callback'
+      preLoaderRoute: typeof oidcCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(protected)/teams/': {
@@ -209,6 +229,7 @@ const protectedRouteRouteWithChildren = protectedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   protectedRouteRoute: protectedRouteRouteWithChildren,
+  oidcCallbackRoute: oidcCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

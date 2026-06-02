@@ -34,13 +34,14 @@ import {
   Fragment,
   type FunctionComponent,
 } from "react";
+import type { AuthContext } from "#/routes/(protected)/route";
 import {
   SIDEBAR_FOOTER_ITEMS,
   SIDEBAR_CONTENT_ITEMS as sidebarItems,
 } from "#/utils/sidebar-items";
 
 export const AppSidebar: FunctionComponent<
-  ComponentPropsWithoutRef<typeof Sidebar>
+  ComponentPropsWithoutRef<typeof Sidebar> & AuthContext
 > = (props) => {
   const { open } = useSidebar();
   const { pathname } = useLocation();
