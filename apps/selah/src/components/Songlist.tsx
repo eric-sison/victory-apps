@@ -1,5 +1,5 @@
+import { Heart, MoreHorizontal, Pause, Play } from "@workspace/ui";
 import { cn } from "@workspace/ui/lib/utils";
-import { Heart, MoreHorizontal, Pause, Play } from "lucide-react";
 import { useState } from "react";
 
 export type Song = {

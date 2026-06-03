@@ -68,11 +68,10 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col h-full overflow-y-hidden">
-      <SidebarProvider>
+      <SidebarProvider className="p-2">
         <AppSidebar user={user} />
         <SidebarInset>
           <main className="flex-1 overflow-auto">
-            {user.profile.name}
             <Outlet />
           </main>
         </SidebarInset>

@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import { AudioLines, ChevronRight } from "@workspace/ui";
 import {
   Collapsible,
   CollapsibleContent,
@@ -28,7 +29,6 @@ import {
   SidebarRail,
   useSidebar,
 } from "@workspace/ui/components/Sidebar";
-import { AudioLines, ChevronRight } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,
   Fragment,
@@ -54,7 +54,7 @@ export const AppSidebar: FunctionComponent<
   };
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" {...props}>
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">

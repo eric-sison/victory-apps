@@ -45,13 +45,15 @@ function RouteComponent() {
   const { user } = Route.useRouteContext();
 
   return (
-    <SidebarProvider className="p-4">
-      <AppSidebar user={user} />
-      <SidebarInset className="rounded-lg">
-        <main className="flex-1">
-          <Outlet />
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="flex flex-col h-full overflow-y-hidden">
+      <SidebarProvider className="p-2">
+        <AppSidebar user={user} />
+        <SidebarInset>
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }

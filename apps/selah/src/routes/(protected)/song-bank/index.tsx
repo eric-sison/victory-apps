@@ -1,25 +1,29 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLocation } from "@tanstack/react-router";
+import { Plus } from "@workspace/ui";
 import { Button } from "@workspace/ui/components/Button";
 import {
   Page,
   PageAction,
+  PageBreadcrumb,
   PageContent,
   PageDescription,
   PageFooter,
   PageHeader,
   PageTitle,
 } from "@workspace/ui/components/Page";
-import { Plus } from "lucide-react";
 import { MusicPlayer } from "#/components/MusicPlayer";
 import { SONG_SECTIONS, SongList } from "#/components/Songlist";
+import { iconMap } from "#/utils/route-icons";
 
 export const Route = createFileRoute("/(protected)/song-bank/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
+  const { pathname } = useLocation();
   return (
     <Page>
+      <PageBreadcrumb pathname={pathname} icons={iconMap} />
       <PageHeader>
         <PageTitle>Song Bank</PageTitle>
         <PageDescription>

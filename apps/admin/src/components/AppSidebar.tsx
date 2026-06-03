@@ -58,12 +58,7 @@ export const AppSidebar: FunctionComponent<
   };
 
   return (
-    <Sidebar
-      collapsible="icon"
-      variant="sidebar"
-      className="border-r-0! bg-transparent!"
-      {...props}
-    >
+    <Sidebar collapsible="icon" variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-2">
@@ -76,14 +71,13 @@ export const AppSidebar: FunctionComponent<
                 <AudioLines className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Admin</span>
-                <span className="truncate text-xs">Victory App</span>
+                <span className="truncate font-medium">Victory</span>
+                <span className="truncate text-xs">Admin App</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-
       <SidebarContent>
         {sidebarItems().map((sidebarItem) => (
           <SidebarGroup key={sidebarItem.groupId}>

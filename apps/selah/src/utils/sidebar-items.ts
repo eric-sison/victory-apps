@@ -7,7 +7,7 @@ import {
   Music,
   UserCog,
   Users,
-} from "lucide-react";
+} from "@workspace/ui";
 
 type AppPath = LinkProps["to"];
 

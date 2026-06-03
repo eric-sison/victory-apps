@@ -1,5 +1,3 @@
-import { Button } from "@workspace/ui/components/Button";
-import { Slider } from "@workspace/ui/components/Slider";
 import {
   ListMusic,
   Maximize,
@@ -10,7 +8,9 @@ import {
   SkipBack,
   SkipForward,
   Volume2,
-} from "lucide-react";
+} from "@workspace/ui";
+import { Button } from "@workspace/ui/components/Button";
+import { Slider } from "@workspace/ui/components/Slider";
 import type { FunctionComponent } from "react";
 
 export const MusicPlayer: FunctionComponent = () => {

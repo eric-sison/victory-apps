@@ -13,14 +13,14 @@ const config = defineConfig({
   },
   plugins: [
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
-    // nitro({
-    //   config: {
-    //     rollupConfig: {
-    //       external: [/^@sentry\//],
-    //     },
-    //   },
-    // }),
+    // nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({
+      config: {
+        rollupConfig: {
+          external: [/^@sentry\//],
+        },
+      },
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
