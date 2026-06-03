@@ -5,6 +5,10 @@ export const ErrorMessages = {
       short:
         "We couldn't process your request. Please check your input and try again.",
     },
+    CONSENT_EXPIRED: {
+      full: "The authorization request you're trying to approve has expired or is no longer valid. Please go back to the application and start the sign-in process again.",
+      short: "This authorization request has expired.",
+    },
   },
 
   401: {

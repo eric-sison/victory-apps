@@ -87,12 +87,12 @@ export const CredentialsSignInForm: FunctionComponent<
               }
               default: {
                 errorMessage = "Something went wrong. Please try again.";
-                console.error(ctx.error);
+                console.error("User SignIn", ctx.error);
                 break;
               }
             }
 
-            toast.error(`${errorMessage}`, {
+            toast.error(errorMessage, {
               position: "top-center",
             });
           },

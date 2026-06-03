@@ -73,8 +73,8 @@ export const auth = betterAuth({
     oauthProvider({
       allowDynamicClientRegistration: true,
       storeClientSecret: "hashed",
-      loginPage: "/auth/oidc/sign-in",
-      consentPage: "/auth/oidc/consent",
+      loginPage: "/auth/sign-in",
+      consentPage: "/auth/consent",
       scopes: ["openid", "email", "offline_access", "profile"],
       silenceWarnings: {
         oauthAuthServerConfig: true,

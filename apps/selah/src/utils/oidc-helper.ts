@@ -10,7 +10,7 @@ export function getUserManager(): UserManager {
       client_secret: "cExqiBGGkkMFRwaGmnhkZwavCpmSnQYB",
       redirect_uri: "http://localhost:5860/callback",
       response_type: "code",
-      scope: "openid profile email",
+      scope: "openid profile email offline_access",
       userStore: new WebStorageStateStore({ store: window.localStorage }),
     });
   }

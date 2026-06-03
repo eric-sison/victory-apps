@@ -24,16 +24,20 @@ export const Route = createFileRoute("/auth/sign-in")({
   beforeLoad: async () => await requireNoAuth(),
   validateSearch: z.object({
     redirectTo: z.string().optional(),
+    scope: z.string().optional(),
   }),
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { redirectTo } = useSearch({ from: "/auth/sign-in" });
+  const { redirectTo, scope } = useSearch({ from: "/auth/sign-in" });
 
   return (
     <div className="flex h-full items-center justify-center">
-      <CredentialsSignInForm callbackURL={redirectTo ?? "/dashboard"} />
+      <CredentialsSignInForm
+        callbackURL={redirectTo ?? "/dashboard"}
+        signInType={scope ? "oidc" : "credentials"}
+      />
     </div>
   );
 }
