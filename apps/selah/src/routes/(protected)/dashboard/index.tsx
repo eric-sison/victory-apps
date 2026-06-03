@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/Button";
 import { getUserManager } from "#/utils/oidc-helper";
 
@@ -7,10 +7,11 @@ export const Route = createFileRoute("/(protected)/dashboard/")({
 });
 
 function RouteComponent() {
+  const navigate = useNavigate();
+
   async function handleSignOut() {
-    await getUserManager().signoutRedirect({
-      post_logout_redirect_uri: "http://localhost:5860",
-    });
+    await getUserManager().removeUser();
+    navigate({ to: "/" });
   }
 
   return (
