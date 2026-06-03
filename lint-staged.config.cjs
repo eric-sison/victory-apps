@@ -4,7 +4,8 @@ module.exports = {
       (f) =>
         !f.includes("/scripts/") &&
         !f.includes("/src/database/migrations/") &&
-        !f.includes("/src/database/schemas/")
+        !f.includes("/src/database/schemas/") && 
+        !f.endsWith("vite.config.ts")
     );
     
     if (!filtered.length) return [];
