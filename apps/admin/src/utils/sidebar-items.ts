@@ -1,10 +1,12 @@
 import type { LinkProps } from "@tanstack/react-router";
 import {
-  CircleGauge,
+  Home,
   KeyRound,
   LayoutGrid,
   type LucideIcon,
   Settings,
+  ShieldCheck,
+  UserCog,
   Users,
 } from "@workspace/ui";
 
@@ -37,29 +39,41 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
         id: "general-dashboard",
         title: "Dashboard",
         path: "/dashboard",
-        icon: CircleGauge,
+        icon: Home,
         subItems: [],
       },
       {
         id: "general-apps",
-        title: "Apps",
+        title: "Client Apps",
         path: "/apps",
         icon: LayoutGrid,
         subItems: [],
       },
       {
-        id: "general-users",
-        title: "Users",
+        id: "general-user-management",
+        title: "User Management",
         path: "/users",
-        icon: Users,
-        subItems: [],
-      },
-      {
-        id: "general-sessions",
-        title: "Sessions",
-        path: "/sessions",
-        icon: KeyRound,
-        subItems: [],
+        icon: UserCog,
+        subItems: [
+          {
+            id: "general-user-management-users",
+            title: "Users",
+            path: "/users",
+            icon: Users,
+          },
+          {
+            id: "general-user-management-consent",
+            title: "Consent",
+            path: "/consent",
+            icon: ShieldCheck,
+          },
+          {
+            id: "general-user-management-sessions",
+            title: "Sessions",
+            path: "/sessions",
+            icon: KeyRound,
+          },
+        ],
       },
       {
         id: "general-settings",

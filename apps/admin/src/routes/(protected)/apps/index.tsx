@@ -9,7 +9,7 @@ import {
   PageTitle,
 } from "@workspace/ui/components/Page";
 import { authClient } from "#/lib/auth-client";
-import { iconMap } from "#/utils/route-icons";
+import { routeMap } from "#/utils/route-metadata";
 
 export const Route = createFileRoute("/(protected)/apps/")({
   component: RouteComponent,
@@ -37,7 +37,7 @@ function RouteComponent() {
 
   return (
     <Page>
-      <PageBreadcrumb pathname={pathname} icons={iconMap} />
+      <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
         <PageTitle>Apps</PageTitle>
         <PageDescription>

@@ -24,18 +24,23 @@ function formatSegment(segment: string): string {
 
 type PageBreadcrumbProps = ComponentProps<typeof Breadcrumb> & {
   pathname: string;
-  icons?: Record<string, React.ElementType>;
+  routes?: Record<string, { label: string; icon?: React.ElementType }>;
 };
 
-function PageBreadcrumb({ pathname, icons, ...props }: PageBreadcrumbProps) {
+function PageBreadcrumb({ pathname, routes, ...props }: PageBreadcrumbProps) {
   const path = typeof pathname === "string" ? pathname : "";
   const segments = path.split("/").filter(Boolean);
 
-  const crumbs = segments.map((segment, index) => ({
-    label: formatSegment(segment),
-    href: `/${segments.slice(0, index + 1).join("/")}`,
-    isLast: index === segments.length - 1,
-  }));
+  const crumbs = segments.map((segment, index) => {
+    const href = `/${segments.slice(0, index + 1).join("/")}`;
+    const meta = routes?.[href];
+    return {
+      label: meta?.label ?? formatSegment(segment),
+      icon: meta?.icon,
+      href,
+      isLast: index === segments.length - 1,
+    };
+  });
 
   return (
     <Breadcrumb className="border-b px-4 py-2.5" {...props}>
@@ -44,32 +49,27 @@ function PageBreadcrumb({ pathname, icons, ...props }: PageBreadcrumbProps) {
           <BreadcrumbLink href="/">Home</BreadcrumbLink>
         </BreadcrumbItem>
 
-        {crumbs.map((crumb) => {
-          const Icon = icons?.[crumb.href]; // lookup works for all crumbs
-
-          return (
-            <Fragment key={crumb.href}>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                {crumb.isLast ? (
-                  <BreadcrumbPage className="flex items-center gap-1.5">
-                    {Icon && <Icon className="size-3.5" />}
-                    {crumb.label}
-                  </BreadcrumbPage>
-                ) : (
-                  <BreadcrumbLink
-                    href={crumb.href}
-                    className="flex items-center gap-1.5"
-                  >
-                    {Icon && <Icon className="size-3.5" />}{" "}
-                    {/* ← icon here too */}
-                    {crumb.label}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-            </Fragment>
-          );
-        })}
+        {crumbs.map((crumb) => (
+          <Fragment key={crumb.href}>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              {crumb.isLast ? (
+                <BreadcrumbPage className="flex items-center gap-1.5">
+                  {crumb.icon && <crumb.icon className="size-3.5" />}
+                  {crumb.label}
+                </BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink
+                  href={crumb.href}
+                  className="flex items-center gap-1.5"
+                >
+                  {crumb.icon && <crumb.icon className="size-3.5" />}
+                  {crumb.label}
+                </BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+          </Fragment>
+        ))}
       </BreadcrumbList>
     </Breadcrumb>
   );

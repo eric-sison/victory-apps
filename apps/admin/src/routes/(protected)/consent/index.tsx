@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/Page";
 import { routeMap } from "#/utils/route-metadata";
 
-export const Route = createFileRoute("/(protected)/sessions/")({
+export const Route = createFileRoute("/(protected)/consent/")({
   component: RouteComponent,
 });
 
@@ -20,9 +20,10 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Sessions</PageTitle>
+        <PageTitle>Consent</PageTitle>
         <PageDescription>
-          Monitor and manage active user sessions across all devices.
+          Review and manage permissions granted to third-party applications
+          accessing your platform.
         </PageDescription>
       </PageHeader>
 

@@ -33,9 +33,11 @@ import {
   type ComponentPropsWithoutRef,
   Fragment,
   type FunctionComponent,
+  useState,
 } from "react";
 import type { auth } from "#/lib/auth";
 import {
+  type Item,
   SIDEBAR_FOOTER_ITEMS,
   SIDEBAR_CONTENT_ITEMS as sidebarItems,
 } from "#/utils/sidebar-items";
@@ -44,15 +46,66 @@ type AppSidebarProps = {
   user: typeof auth.$Infer.Session.user;
 };
 
+function CollapsibleMenuItem({
+  item,
+  pathname,
+  isActive,
+}: {
+  item: Item & { subItems: Item[] };
+  pathname: string;
+  isActive: (path: string | undefined) => boolean;
+}) {
+  const [isOpen, setIsOpen] = useState(() =>
+    item.subItems.some((sub) => sub.path === pathname),
+  );
+
+  return (
+    <Collapsible
+      className="group/collapsible"
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      render={
+        <SidebarMenuItem>
+          <CollapsibleTrigger
+            render={
+              <SidebarMenuButton>
+                {item.icon && <item.icon />}
+                <span>{item.title}</span>
+                <ChevronRight className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+              </SidebarMenuButton>
+            }
+          />
+          <CollapsibleContent>
+            <SidebarMenuSub>
+              {item.subItems.map((subItem) => (
+                <SidebarMenuSubItem key={subItem.id}>
+                  <SidebarMenuSubButton
+                    isActive={isActive(subItem.path)}
+                    render={
+                      <Link to={subItem.path}>
+                        {subItem.icon && <subItem.icon />}
+                        <span>{subItem.title}</span>
+                      </Link>
+                    }
+                  />
+                </SidebarMenuSubItem>
+              ))}
+            </SidebarMenuSub>
+          </CollapsibleContent>
+        </SidebarMenuItem>
+      }
+    />
+  );
+}
+
 export const AppSidebar: FunctionComponent<
   ComponentPropsWithoutRef<typeof Sidebar> & AppSidebarProps
 > = ({ user, ...props }) => {
   const { open } = useSidebar();
   const { pathname } = useLocation();
-
   const navigate = useNavigate();
 
-  const setActiveItem = (path: string | undefined) => {
+  const isActive = (path: string | undefined) => {
     if (!path) return false;
     return pathname === path || pathname.startsWith(`${path}/`);
   };
@@ -78,6 +131,7 @@ export const AppSidebar: FunctionComponent<
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         {sidebarItems().map((sidebarItem) => (
           <SidebarGroup key={sidebarItem.groupId}>
@@ -89,50 +143,17 @@ export const AppSidebar: FunctionComponent<
             <SidebarGroupContent>
               <SidebarMenu>
                 {sidebarItem.items.map((item) => {
-                  // Render sub items in collapsible
                   if (item.subItems.length > 0 && open) {
                     return (
-                      <Collapsible
+                      <CollapsibleMenuItem
                         key={item.id}
-                        className="group/collapsible"
-                        defaultOpen={item.subItems.some(
-                          (sub) => sub.path === pathname,
-                        )}
-                        render={
-                          <SidebarMenuItem>
-                            <CollapsibleTrigger
-                              render={
-                                <SidebarMenuButton>
-                                  {item.icon && <item.icon />}
-                                  <span>{item.title}</span>
-                                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
-                                </SidebarMenuButton>
-                              }
-                            />
-                            <CollapsibleContent>
-                              <SidebarMenuSub>
-                                {item.subItems.map((subItem) => (
-                                  <SidebarMenuSubItem key={subItem.title}>
-                                    <SidebarMenuSubButton
-                                      isActive={setActiveItem(subItem.path)}
-                                      render={
-                                        <Link to={subItem.path}>
-                                          {subItem.icon && <subItem.icon />}
-                                          <span>{subItem.title}</span>
-                                        </Link>
-                                      }
-                                    />
-                                  </SidebarMenuSubItem>
-                                ))}
-                              </SidebarMenuSub>
-                            </CollapsibleContent>
-                          </SidebarMenuItem>
-                        }
+                        item={item}
+                        pathname={pathname}
+                        isActive={isActive}
                       />
                     );
                   }
 
-                  // Render sub-items in a dropdown menu
                   if (item.subItems.length > 0 && !open) {
                     return (
                       <DropdownMenu key={item.id}>
@@ -168,13 +189,12 @@ export const AppSidebar: FunctionComponent<
                     );
                   }
 
-                  // Render items as normal sidebar menu item
                   return (
                     item.path && (
                       <SidebarMenuItem key={item.id}>
                         <SidebarMenuButton
                           tooltip={item.title}
-                          isActive={setActiveItem(item.path)}
+                          isActive={isActive(item.path)}
                           render={
                             <Link to={item.path}>
                               <item.icon />
@@ -199,7 +219,7 @@ export const AppSidebar: FunctionComponent<
               {item.path && (
                 <SidebarMenuButton
                   tooltip={item.title}
-                  isActive={setActiveItem(item.path)}
+                  isActive={isActive(item.path)}
                   render={
                     <Link to={item.path}>
                       <item.icon />

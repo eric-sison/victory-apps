@@ -13,7 +13,7 @@ import {
 } from "@workspace/ui/components/Page";
 import { MusicPlayer } from "#/components/MusicPlayer";
 import { SONG_SECTIONS, SongList } from "#/components/Songlist";
-import { iconMap } from "#/utils/route-icons";
+import { routeMap } from "#/utils/route-metadata";
 
 export const Route = createFileRoute("/(protected)/song-bank/")({
   component: RouteComponent,
@@ -23,7 +23,7 @@ function RouteComponent() {
   const { pathname } = useLocation();
   return (
     <Page>
-      <PageBreadcrumb pathname={pathname} icons={iconMap} />
+      <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
         <PageTitle>Song Bank</PageTitle>
         <PageDescription>

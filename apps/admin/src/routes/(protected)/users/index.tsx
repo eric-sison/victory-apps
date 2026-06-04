@@ -15,7 +15,7 @@ import {
 import { DataTable } from "#/components/DataTable";
 import { usersColumns } from "#/components/features/users/columns";
 import { auth } from "#/lib/auth";
-import { iconMap } from "#/utils/route-icons";
+import { routeMap } from "#/utils/route-metadata";
 
 export const getUsers = createServerFn({ method: "GET" }).handler(async () => {
   const headers = getRequestHeaders();
@@ -37,7 +37,7 @@ function RouteComponent() {
 
   return (
     <Page>
-      <PageBreadcrumb pathname={pathname} icons={iconMap} />
+      <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
         <PageTitle>Users</PageTitle>
         <PageDescription>

@@ -29,7 +29,30 @@ app.use("/auth/sign-up/email", rateLimiter({ windowMs: 60 * 1000, limit: 5 }));
 app.use("/auth/reset-password", rateLimiter({ windowMs: 60 * 1000, limit: 3 }));
 app.use("/auth/oauth2/consent", rateLimiter({ windowMs: 60 * 1000, limit: 3 }));
 
-app.on(["POST", "GET"], "/auth/*", async (c) => await auth.handler(c.req.raw));
+app.on(["POST", "GET"], "/auth/*", async (c) => {
+  const response = await auth.handler(c.req.raw);
+
+  if (c.req.path.includes("/oauth2/authorize")) {
+    const contentType = response.headers.get("content-type");
+
+    if (contentType?.includes("application/json")) {
+      const text = await response.clone().text();
+
+      if (text) {
+        try {
+          const data = JSON.parse(text);
+          if (data.redirect === true && data.url) {
+            return c.redirect(data.url);
+          }
+        } catch {
+          // not valid JSON, fall through
+        }
+      }
+    }
+  }
+
+  return response;
+});
 
 const routes = [healthcheckHandler, discoveryHandler] as const;
 

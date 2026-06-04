@@ -1,7 +1,7 @@
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { betterAuth } from "better-auth/minimal";
-import { admin, jwt, openAPI } from "better-auth/plugins";
+import { admin, jwt, multiSession, openAPI } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { env } from "#/utils/env.js";
 import db from "../database/conn.js";
@@ -68,6 +68,7 @@ export const auth = betterAuth({
 
   plugins: [
     openAPI(),
+    multiSession(),
     admin(),
     jwt(),
     oauthProvider({
@@ -75,6 +76,16 @@ export const auth = betterAuth({
       storeClientSecret: "hashed",
       loginPage: "/auth/sign-in",
       consentPage: "/auth/consent",
+      selectAccount: {
+        page: "/auth/select-account",
+        shouldRedirect: async ({ headers }): Promise<boolean> => {
+          const allSessions = await auth.api.listDeviceSessions({
+            headers,
+          });
+
+          return allSessions.length > 1;
+        },
+      },
       scopes: ["openid", "email", "offline_access", "profile"],
       silenceWarnings: {
         oauthAuthServerConfig: true,
