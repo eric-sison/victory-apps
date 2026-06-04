@@ -43,7 +43,7 @@ COPY --from=pruner-admin /app/out/json/ .
 # --no-lockfile forces fresh platform binary resolution (lockfile was generated on macOS).
 RUN echo 'public-hoist-pattern[]=lightningcss' >> .npmrc \
   && echo 'public-hoist-pattern[]=lightningcss-*' >> .npmrc \
-  && pnpm install --no-lockfile
+  && pnpm install --frozen-lockfile
 
 # -----------------------------------------------------------------------------
 # BUILDER
