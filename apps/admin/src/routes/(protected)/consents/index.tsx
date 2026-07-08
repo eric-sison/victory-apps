@@ -9,7 +9,7 @@ import {
 } from "@workspace/ui/components/Page";
 import { routeMap } from "#/utils/route-metadata";
 
-export const Route = createFileRoute("/(protected)/consent/")({
+export const Route = createFileRoute("/(protected)/consents/")({
   component: RouteComponent,
 });
 
@@ -20,7 +20,7 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Consent</PageTitle>
+        <PageTitle>{routeMap[pathname].label}</PageTitle>
         <PageDescription>
           Review and manage permissions granted to third-party applications
           accessing your platform.

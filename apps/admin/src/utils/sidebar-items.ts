@@ -63,8 +63,8 @@ export const SIDEBAR_CONTENT_ITEMS = (_userId?: string): SidebarItem[] => [
           },
           {
             id: "general-user-management-consent",
-            title: "Consent",
-            path: "/consent",
+            title: "Consents",
+            path: "/consents",
             icon: ShieldCheck,
           },
           {

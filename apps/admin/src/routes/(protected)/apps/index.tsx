@@ -39,7 +39,7 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Apps</PageTitle>
+        <PageTitle>{routeMap[pathname].label}</PageTitle>
         <PageDescription>
           Manage connected applications and their access permissions.
         </PageDescription>

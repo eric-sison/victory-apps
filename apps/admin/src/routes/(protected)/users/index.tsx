@@ -17,17 +17,19 @@ import { usersColumns } from "#/components/features/users/columns";
 import { auth } from "#/lib/auth";
 import { routeMap } from "#/utils/route-metadata";
 
-export const getUsers = createServerFn({ method: "GET" }).handler(async () => {
-  const headers = getRequestHeaders();
+export const getUsersFn = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const headers = getRequestHeaders();
 
-  return await auth.api.listUsers({
-    query: {},
-    headers,
-  });
-});
+    return await auth.api.listUsers({
+      query: {},
+      headers,
+    });
+  },
+);
 
 export const Route = createFileRoute("/(protected)/users/")({
-  loader: async () => await getUsers(),
+  loader: async () => await getUsersFn(),
   component: RouteComponent,
 });
 
@@ -39,7 +41,7 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Users</PageTitle>
+        <PageTitle>{routeMap[pathname].label}</PageTitle>
         <PageDescription>
           Manage user accounts, roles, and access permissions.
         </PageDescription>

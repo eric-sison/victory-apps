@@ -20,7 +20,7 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Settings</PageTitle>
+        <PageTitle>{routeMap[pathname].label}</PageTitle>
         <PageDescription>
           Manage your account preferences and application configuration.
         </PageDescription>

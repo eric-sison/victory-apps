@@ -20,7 +20,7 @@ function RouteComponent() {
     <Page>
       <PageBreadcrumb pathname={pathname} routes={routeMap} />
       <PageHeader>
-        <PageTitle>Dashboard</PageTitle>
+        <PageTitle>{routeMap[pathname].label}</PageTitle>
         <PageDescription>
           An overview of key metrics and recent activity.
         </PageDescription>

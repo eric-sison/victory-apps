@@ -18,7 +18,7 @@ import { Route as protectedUsersIndexRouteImport } from './routes/(protected)/us
 import { Route as protectedSettingsIndexRouteImport } from './routes/(protected)/settings/index'
 import { Route as protectedSessionsIndexRouteImport } from './routes/(protected)/sessions/index'
 import { Route as protectedDashboardIndexRouteImport } from './routes/(protected)/dashboard/index'
-import { Route as protectedConsentIndexRouteImport } from './routes/(protected)/consent/index'
+import { Route as protectedConsentsIndexRouteImport } from './routes/(protected)/consents/index'
 import { Route as protectedAppsIndexRouteImport } from './routes/(protected)/apps/index'
 import { Route as AuthOidcSignOutRouteImport } from './routes/auth/oidc/sign-out'
 
@@ -66,9 +66,9 @@ const protectedDashboardIndexRoute = protectedDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => protectedRouteRoute,
 } as any)
-const protectedConsentIndexRoute = protectedConsentIndexRouteImport.update({
-  id: '/consent/',
-  path: '/consent/',
+const protectedConsentsIndexRoute = protectedConsentsIndexRouteImport.update({
+  id: '/consents/',
+  path: '/consents/',
   getParentRoute: () => protectedRouteRoute,
 } as any)
 const protectedAppsIndexRoute = protectedAppsIndexRouteImport.update({
@@ -89,7 +89,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/apps/': typeof protectedAppsIndexRoute
-  '/consent/': typeof protectedConsentIndexRoute
+  '/consents/': typeof protectedConsentsIndexRoute
   '/dashboard/': typeof protectedDashboardIndexRoute
   '/sessions/': typeof protectedSessionsIndexRoute
   '/settings/': typeof protectedSettingsIndexRoute
@@ -102,7 +102,7 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/apps': typeof protectedAppsIndexRoute
-  '/consent': typeof protectedConsentIndexRoute
+  '/consents': typeof protectedConsentsIndexRoute
   '/dashboard': typeof protectedDashboardIndexRoute
   '/sessions': typeof protectedSessionsIndexRoute
   '/settings': typeof protectedSettingsIndexRoute
@@ -117,7 +117,7 @@ export interface FileRoutesById {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/oidc/sign-out': typeof AuthOidcSignOutRoute
   '/(protected)/apps/': typeof protectedAppsIndexRoute
-  '/(protected)/consent/': typeof protectedConsentIndexRoute
+  '/(protected)/consents/': typeof protectedConsentsIndexRoute
   '/(protected)/dashboard/': typeof protectedDashboardIndexRoute
   '/(protected)/sessions/': typeof protectedSessionsIndexRoute
   '/(protected)/settings/': typeof protectedSettingsIndexRoute
@@ -132,7 +132,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/oidc/sign-out'
     | '/apps/'
-    | '/consent/'
+    | '/consents/'
     | '/dashboard/'
     | '/sessions/'
     | '/settings/'
@@ -145,7 +145,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/oidc/sign-out'
     | '/apps'
-    | '/consent'
+    | '/consents'
     | '/dashboard'
     | '/sessions'
     | '/settings'
@@ -159,7 +159,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/oidc/sign-out'
     | '/(protected)/apps/'
-    | '/(protected)/consent/'
+    | '/(protected)/consents/'
     | '/(protected)/dashboard/'
     | '/(protected)/sessions/'
     | '/(protected)/settings/'
@@ -240,11 +240,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof protectedDashboardIndexRouteImport
       parentRoute: typeof protectedRouteRoute
     }
-    '/(protected)/consent/': {
-      id: '/(protected)/consent/'
-      path: '/consent'
-      fullPath: '/consent/'
-      preLoaderRoute: typeof protectedConsentIndexRouteImport
+    '/(protected)/consents/': {
+      id: '/(protected)/consents/'
+      path: '/consents'
+      fullPath: '/consents/'
+      preLoaderRoute: typeof protectedConsentsIndexRouteImport
       parentRoute: typeof protectedRouteRoute
     }
     '/(protected)/apps/': {
@@ -266,7 +266,7 @@ declare module '@tanstack/react-router' {
 
 interface protectedRouteRouteChildren {
   protectedAppsIndexRoute: typeof protectedAppsIndexRoute
-  protectedConsentIndexRoute: typeof protectedConsentIndexRoute
+  protectedConsentsIndexRoute: typeof protectedConsentsIndexRoute
   protectedDashboardIndexRoute: typeof protectedDashboardIndexRoute
   protectedSessionsIndexRoute: typeof protectedSessionsIndexRoute
   protectedSettingsIndexRoute: typeof protectedSettingsIndexRoute
@@ -275,7 +275,7 @@ interface protectedRouteRouteChildren {
 
 const protectedRouteRouteChildren: protectedRouteRouteChildren = {
   protectedAppsIndexRoute: protectedAppsIndexRoute,
-  protectedConsentIndexRoute: protectedConsentIndexRoute,
+  protectedConsentsIndexRoute: protectedConsentsIndexRoute,
   protectedDashboardIndexRoute: protectedDashboardIndexRoute,
   protectedSessionsIndexRoute: protectedSessionsIndexRoute,
   protectedSettingsIndexRoute: protectedSettingsIndexRoute,
