@@ -47,7 +47,7 @@
     "pino": "^10.3.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.3.2",
     "zod": "^4.4.3",
     "zustand": "^5.0.13"
   },
