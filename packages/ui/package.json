@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@fontsource-variable/inter": "^5.2.8",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.3.2",
     "@turbo/gen": "^2.9.18",
     "@types/node": "^25.1.0",
     "@types/react": "^19.2.17",
